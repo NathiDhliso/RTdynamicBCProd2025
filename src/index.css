@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-text-primary font-sans;
+}
+
+.focus-ring {
+  @apply ring-accent/50 ring-offset-2;
+}
+
+/* Enhanced micro-interactions with CSS transitions */
+.link-hover {
+  @apply transition-colors duration-200 ease-out;
+}
+
+.link-hover:hover {
+  @apply text-accent;
+}
+
+.button-hover {
+  @apply transition-all duration-200 ease-out;
+}
+
+.button-hover:hover {
+  @apply transform scale-105 shadow-lg;
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent gaps between sections */
+section:not(footer) {
+  position: relative;
+  margin: 0;
+  padding-top: clamp(4rem, 8vw, 8rem);
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+
+/* Hero section specific styling */
+.gsap-hero-section {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+/* Fix potential GSAP pinning issues */
+.pin-spacer {
+  display: block !important;
+  height: auto !important;
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Professional Affiliations Strip */
+.affiliation-strip {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  padding: 2rem 0;
+}
+
+.affiliation-track {
+  display: flex;
+  gap: 3rem;
+  will-change: transform;
+  width: max-content;
+  animation: scroll-right 30s linear infinite;
+}
+
+.affiliation-item {
+  flex-shrink: 0;
+  height: 60px;
+  width: auto;
+  max-width: 150px;
+  transition: filter 0.3s ease, transform 0.3s ease;
+  filter: grayscale(100%) opacity(0.6);
+  cursor: pointer;
+  object-fit: contain;
+}
+
+.affiliation-item:hover {
+  filter: grayscale(0%) opacity(1);
+  transform: scale(1.1);
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .affiliation-item {
+    max-width: 100px;
+    height: 50px;
+  }
+  
+  .affiliation-track {
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .affiliation-item {
+    max-width: 200px;
+    height: 70px;
+  }
+}
