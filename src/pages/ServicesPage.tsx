@@ -9,19 +9,19 @@ const ServicesPage: React.FC = () => {
     {
       icon: <Users2 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-300" strokeWidth={1.5} />,
       title: "Financial Auditing",
-      description: "Professional audit and assurance services to ensure compliance and financial integrity.",
+      description: "Our professional audit and assurance services are designed to ensure the highest levels of compliance and financial integrity. Led by auditors with experience at 'Big Four' firms and the Auditor General South Africa, we offer meticulous external and internal audits, compliance reviews, and risk assessments to safeguard your business.",
       features: ["External Audits", "Internal Audits", "Compliance Reviews", "Risk Assessments"]
     },
     {
       icon: <BarChart3 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-300" strokeWidth={1.5} />,
       title: "Tax Services",
-      description: "Comprehensive tax planning and compliance services for individuals and businesses.",
+      description: "Navigate the complexities of South African tax with our comprehensive tax services. Our experts offer strategic tax planning, full SARS compliance, VAT services, and tax optimization to minimize your liabilities and maximize your returns. We have hands-on experience in managing SARS audits and ensuring meticulous tax filing.",
       features: ["Tax Planning", "SARS Compliance", "VAT Services", "Tax Optimization"]
     },
     {
       icon: <Cog className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-300" strokeWidth={1.5} />,
       title: "Business Consulting",
-      description: "Strategic business advice and financial planning to drive growth and efficiency.",
+      description: "Drive your business forward with our strategic business consulting services. We provide in-depth financial planning, performance analysis, and growth consulting to help you achieve your objectives. Our team has experience in developing financial models and providing insights to C-suite executives at major corporations.",
       features: ["Business Strategy", "Financial Planning", "Performance Analysis", "Growth Consulting"]
     },
     {

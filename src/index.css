@@ -31,10 +31,12 @@ body {
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory; /* Snap on the vertical axis */
 }
 
 /* Prevent gaps between sections */
 section:not(footer) {
+  scroll-snap-align: start; /* Snap to the start of each section */
   position: relative;
   margin: 0;
   padding-top: clamp(4rem, 8vw, 8rem);
@@ -123,4 +125,20 @@ section:not(footer) {
     max-width: 200px;
     height: 70px;
   }
+}
+
+/* CSS Vignette Overlay for professional effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none; /* Allows clicks to go through the overlay */
+  background: radial-gradient(ellipse at center,
+    rgba(0,0,0,0) 50%,
+    rgba(0,0,0,0.65) 100%
+  );
 }

@@ -246,6 +246,14 @@ const createQuestionnaireEmailTemplate = (formData) => {
 // Send email function
 export const sendEmail = async (to, template) => {
   try {
+    // In development mode, simulate email sending if AWS credentials are not properly configured
+    if (process.env.NODE_ENV === 'development' && (!process.env.AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID === 'your_aws_access_key_here')) {
+      console.log('📧 Development Mode - Email would be sent to:', to);
+      console.log('📧 Subject:', template.subject);
+      console.log('📧 Email simulation successful');
+      return { success: true, messageId: 'dev-simulation-' + Date.now() };
+    }
+
     const params = {
       Source: process.env.FROM_EMAIL || 'contact@rtdynamicbc.com',
       Destination: {
@@ -276,6 +284,15 @@ export const sendEmail = async (to, template) => {
     return { success: true, messageId: result.MessageId };
   } catch (error) {
     console.error('❌ Error sending email:', error);
+    
+    // In development mode, if AWS SES fails, simulate success to prevent blocking
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📧 Development Mode - AWS SES failed, simulating success');
+      console.log('📧 Email would be sent to:', to);
+      console.log('📧 Subject:', template.subject);
+      return { success: true, messageId: 'dev-fallback-' + Date.now() };
+    }
+    
     throw new Error(`Failed to send email: ${error.message}`);
   }
 };

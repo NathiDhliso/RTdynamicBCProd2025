@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const smoothScrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
+  const [_isTablet, setIsTablet] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
@@ -27,10 +27,10 @@ const HomePage: React.FC = () => {
 
   // Data arrays
   const stats = [
-    { label: "Clients Served", value: 150, number: "150+" },
+    { label: "Clients Served", value: 50, number: "50+" },
     { label: "Success Rate", value: 98, number: "98%" },
-    { label: "Years Experience", value: 15, number: "15+" },
-    { label: "Value Created", value: 500, number: "R500M+" }
+    { label: "Years Combined Experience", value: 10, number: "10+" },
+    { label: "Industries Served", value: 10, number: "10+" }
   ];
 
   const features = [
@@ -131,68 +131,62 @@ const HomePage: React.FC = () => {
     // Refresh ScrollTrigger on resize
     ScrollTrigger.refresh();
 
-    // --- CINEMATIC VIDEO SCRUBBING ---
+    // --- CINEMATIC VIDEO PLAYBACK ON SCROLL ---
     const video = videoRef.current;
-    if (video &&!prefersReducedMotion) {
-      video.pause();
-      
-      const setupVideoAnimation = () => {
-        if (video.duration) {
-          // Main video scrubbing with easing
-          let tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: mainRef.current,
-              start: "top top",
-              end: "+=400%",
-              scrub: 0.5, // Ultra smooth video playback
-              ease: "power2.out",
-              onUpdate: (self) => {
-                if (video.duration) {
-                  const progress = gsap.utils.clamp(0, 1, self.progress);
-                  const smoothProgress = gsap.utils.interpolate(0, 1, progress);
-                  video.currentTime = video.duration * smoothProgress;
-                }
-              }
-            }
-          });
+    if (video && !prefersReducedMotion) {
+      // Start playing the video at a very slow rate
+      video.play();
+      video.playbackRate = 0.2;
 
-          // Video zoom and blur effect
-          gsap.to(video, {
-            scale: 1.3,
-            filter: "blur(0px)",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.3,
-              ease: "power1.inOut",
-              onUpdate: (self) => {
-                const blur = self.progress * 2;
-                const brightness = 1 - (self.progress * 0.3);
-                video.style.filter = `blur(${blur}px) brightness(${brightness})`;
-              }
-            }
-          });
+      // Create a GSAP timeline to control the playback rate
+      const _tl = gsap.timeline({
+        defaults: { duration: 1, ease: 'power2.inOut' },
+        scrollTrigger: {
+          trigger: mainRef.current,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+          onUpdate: (self) => {
+            // Get the scroll velocity (how fast the user is scrolling)
+            const velocity = Math.abs(self.getVelocity() / 1000); // Normalize the velocity
+            // Animate the playbackRate, clamping it between 0.2 and a max of 4
+            gsap.to(video, {
+              playbackRate: gsap.utils.clamp(0.2, 4, velocity),
+              duration: 0.5, // Smoothly transition between playback rates
+              ease: 'power1.out',
+            });
+          },
+        },
+      });
 
-          // Video opacity fade
-          gsap.to(video, {
-            opacity: 0.4,
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "center center",
-              end: "bottom top",
-              scrub: 0.5,
-              ease: "power2.inOut",
-            }
-          });
+      // Video zoom and brightness effect (replaces the blur)
+      gsap.to(video, {
+        scale: 1.2, // A slightly less intense zoom can also help
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.3,
+          ease: "power1.inOut",
+          onUpdate: (self) => {
+            // Animate brightness from 100% down to 40%
+            const brightness = 1 - (self.progress * 0.6);
+            video.style.filter = `brightness(${brightness})`;
+          }
         }
-      };
-      
-      if (video.readyState >= 1) {
-        setupVideoAnimation();
-      } else {
-        video.addEventListener('loadedmetadata', setupVideoAnimation, { once: true });
-      }
+      });
+
+      // Video opacity fade
+      gsap.to(video, {
+        opacity: 0.4,
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "center center",
+          end: "bottom top",
+          scrub: 0.5,
+          ease: "power2.inOut",
+        }
+      });
     }
 
     // --- HERO CONTENT CINEMATIC PARALLAX ---
@@ -288,7 +282,7 @@ const HomePage: React.FC = () => {
     // --- REVEAL ANIMATIONS WITH SMOOTH ENTRANCE ---
     
     // Stats section with wave effect
-    gsap.utils.toArray<HTMLElement>(".gsap-stat-card").forEach((card, index) => {
+    gsap.utils.toArray<HTMLElement>(".gsap-stat-card").forEach((card, _index) => {
       gsap.fromTo(card, 
         {
           y: 150,
@@ -335,8 +329,8 @@ const HomePage: React.FC = () => {
 
     // Features section with 3D card flip effect
     gsap.utils.toArray<HTMLElement>(".gsap-feature-card").forEach((card, index) => {
-      const row = Math.floor(index / 3);
-      const col = index % 3;
+      const _row = Math.floor(index / 3);
+      const _col = index % 3;
       
       // Set initial 3D perspective
       gsap.set(card, {
@@ -594,8 +588,8 @@ const HomePage: React.FC = () => {
                   letterSpacing: '-0.02em', 
                   willChange: 'transform, opacity' 
                 }}>
-                  Professional Business
-                  <span className="block text-emerald-300 font-extralight mt-2 sm:mt-3" style={{ fontWeight: 200 }}>& Chartered Accounting</span>
+                  Expert Chartered Accountants
+                  <span className="block text-emerald-300 font-extralight mt-2 sm:mt-3" style={{ fontWeight: 200 }}>& Strategic Business Advisors</span>
                 </h1>
               </div>
               <p className="text-lg sm:text-xl md:text-xl lg:text-2xl mb-10 sm:mb-12 text-slate-300 leading-relaxed max-w-5xl mx-auto font-light gsap-hero-subtitle" style={{ 
@@ -603,7 +597,7 @@ const HomePage: React.FC = () => {
                 lineHeight: '1.4', 
                 willChange: 'transform, opacity' 
               }}>
-                RT Dynamic Business Consulting delivers sophisticated chartered accounting and strategic business consulting services, partnering with organizations to achieve financial excellence and sustainable growth.
+                RT Dynamic Business Consulting is a powerhouse of chartered accountants and strategic business advisors dedicated to unlocking your business's full potential. With a proven track record in diverse sectors, including banking, telecommunications, and mining, we provide bespoke financial and strategic solutions that drive sustainable growth and ensure regulatory compliance. Our partnership approach means we work as an extension of your team, committed to your success.
               </p>
               <div className="flex flex-col sm:flex-row gap-5 sm:gap-7 justify-center max-w-2xl mx-auto gsap-hero-buttons" style={{ willChange: 'transform, opacity' }}>
                 <Link to="/questionnaire" className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-10 sm:px-12 py-5 sm:py-6 rounded-2xl font-medium transition-all duration-500 flex items-center justify-center group text-base sm:text-lg shadow-xl hover:shadow-2xl border border-emerald-400/20 transform hover:scale-105" style={{ fontWeight: 500 }}>
@@ -746,15 +740,15 @@ const HomePage: React.FC = () => {
                 <ul className="space-y-4 font-light">
                   <li className="flex items-start">
                     <MapPin className="h-5 w-5 mr-3 mt-1 text-emerald-400 flex-shrink-0" strokeWidth={1.5}/>
-                    <span>Midrand, Gauteng, South Africa</span>
+                    <span>1 Diagonal Street, Midrand, South Africa</span>
                   </li>
                   <li className="flex items-center">
                     <Mail className="h-5 w-5 mr-3 text-emerald-400 flex-shrink-0" strokeWidth={1.5}/>
-                    <a href="mailto:info@rtdynamic.co.za" className="hover:text-emerald-300 transition-colors">info@rtdynamic.co.za</a>
+                    <a href="mailto:info@rtdynamicbc.co.za" className="hover:text-emerald-300 transition-colors">info@rtdynamicbc.co.za</a>
                   </li>
                   <li className="flex items-center">
                     <Phone className="h-5 w-5 mr-3 text-emerald-400 flex-shrink-0" strokeWidth={1.5}/>
-                    <a href="tel:+27123456789" className="hover:text-emerald-300 transition-colors">+27 12 345 6789</a>
+                    <a href="tel:0736598177" className="hover:text-emerald-300 transition-colors">073 659 8177</a>
                   </li>
                 </ul>
               </div>

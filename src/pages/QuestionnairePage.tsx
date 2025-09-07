@@ -9,7 +9,7 @@ import Step3 from '@/components/questionnaire/Step3';
 import Step4 from '@/components/questionnaire/Step4';
 
 const QuestionnairePage: React.FC = () => {
-  const { step, totalSteps, prevStep, shouldShowComplianceStep } = useQuestionnaireStore();
+  const { step, totalSteps: _totalSteps, prevStep, shouldShowComplianceStep } = useQuestionnaireStore();
 
   // Calculate actual progress considering conditional step 3
   const getProgress = () => {
@@ -102,7 +102,7 @@ const QuestionnairePage: React.FC = () => {
                 </button>
 
                 <div className="flex space-x-3">
-                  {[1, 2, shouldShowComplianceStep() ? 3 : null, shouldShowComplianceStep() ? 4 : 3].filter(Boolean).map((stepNumber, index) => (
+                  {[1, 2, shouldShowComplianceStep() ? 3 : null, shouldShowComplianceStep() ? 4 : 3].filter(Boolean).map((stepNumber, _index) => (
                     <div
                       key={stepNumber}
                       className={`w-3 h-3 rounded-full transition-all duration-300 ${

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Award, Users, Globe, TrendingUp, Mail, Briefcase, GraduationCap, Trophy } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
 
-const FlipCard = ({ children, frontContent, backContent }) => {
+const FlipCard = ({ children: _children, frontContent, backContent }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -176,15 +176,15 @@ const AboutPage = () => {
     {
       name: "Rabelani Neluheni",
       title: "Co-Founder & Lead Auditor",
-      bio: "Chartered Accountant (SA) with 6+ years of experience in financial auditing and business consulting. Rabelani specializes in helping organizations achieve financial excellence and regulatory compliance through innovative accounting solutions.",
+      bio: "Rabelani Neluheni is a highly experienced Chartered Accountant (CA(SA)) with over 6 years of public practice experience across a wide range of industries, including aviation, manufacturing, automotive, mining, and the public sector. His extensive experience, gained during his time at Deloitte South Africa and Makosi Consulting, has provided him with a deep understanding of financial reporting, South African tax, corporate governance, and compliance. Rabelani is a motivated and hard-working professional with a passion for building valuable relationships and leading teams with empathy and kindness. His major clients have included industry leaders such as ASSORE Ltd, South African Airways (SAA), and Volvo Group Southern Africa.",
       expertise: ["Financial Auditing", "Tax Compliance", "Business Strategy", "Risk Management", "Financial Reporting"],
-      experience: "6+ years as Chartered Accountant (SA), SAICA Member, specializing in audit and assurance services",
+      experience: "6+ years as Chartered Accountant (SA), SAICA Member, with experience at Deloitte South Africa and Makosi Consulting across aviation, manufacturing, automotive, mining, and public sectors",
       education: "Bachelor of Accounting Sciences, Post Graduate Diploma in Accountancy (CTA)",
       achievements: [
         "Chartered Accountant (SA) qualification with SAICA membership",
-        "Successfully completed 100+ audit engagements",
-        "Specialized in SME financial consulting and compliance",
-        "Expert in South African tax legislation and IFRS"
+        "Experience at Deloitte South Africa and Makosi Consulting",
+        "Major clients include ASSORE Ltd, South African Airways (SAA), and Volvo Group Southern Africa",
+        "Expert in financial reporting, South African tax, corporate governance, and compliance"
       ],
       image: "/rabelanipic.jpg",
       email: "neluhenirabelani@gmail.com"
@@ -192,15 +192,15 @@ const AboutPage = () => {
     {
       name: "Tshephisho Ntsoane",
       title: "Co-Founder & Financial Strategist",
-      bio: "Chartered Accountant (SA) with 6+ years of experience in financial strategy and business consulting. Tshephisho brings deep expertise in financial planning, tax optimization, and strategic business development.",
+      bio: "Tshephisho Ntsoane is a distinguished Chartered Accountant (CA(SA)) with over five years of experience in the financial industry, specializing in banking, telecommunications, and the public sector. His dedication and hard work have earned him a reputation as an exceptional finance and tax professional. Tshephisho's background has given him a unique perspective and a formidable skill set that sets him apart in the field of finance. His academic excellence is highlighted by first-time passes in his Board Exams and being the Overall Top Student in his Bachelor of Accountancy program. His recent role as a Specialist in Product Control at Standard Bank Group has further honed his skills in financial reporting, tax compliance, and strategic financial management.",
       expertise: ["Financial Strategy", "Tax Planning", "Business Development", "Financial Analysis", "Compliance Management"],
-      experience: "6+ years as Chartered Accountant (SA), SAICA Member, specializing in financial strategy and tax consulting",
-      education: "Bachelor of Accounting Sciences, Post Graduate Diploma in Accountancy (CTA)",
+      experience: "5+ years as Chartered Accountant (SA), SAICA Member, with recent experience as Specialist in Product Control at Standard Bank Group, specializing in banking, telecommunications, and public sector",
+      education: "Bachelor of Accountancy (Overall Top Student), Post Graduate Diploma in Accountancy (CTA)",
       achievements: [
-        "Chartered Accountant (SA) qualification with SAICA membership",
-        "Developed financial strategies for 80+ SME clients",
-        "Expert in QuickBooks and financial system implementations",
-        "Specialized in tax optimization and business structuring"
+        "Chartered Accountant (SA) qualification with first-time Board Exam passes",
+        "Overall Top Student in Bachelor of Accountancy program",
+        "Specialist in Product Control at Standard Bank Group",
+        "Expert in financial reporting, tax compliance, and strategic financial management"
       ],
       image: "/Tshepishopic.png",
       email: "tshephisho@rtdynamicbc.co.za"
@@ -232,15 +232,14 @@ const AboutPage = () => {
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
                 style={{ fontWeight: 300, letterSpacing: '-0.02em' }}
               >
-                About <span className="text-emerald-300 font-extralight" style={{ fontWeight: 200 }}>RT Dynamic</span>
+                Meet the Experts <span className="text-emerald-300 font-extralight" style={{ fontWeight: 200 }}>Behind Your Success</span>
               </motion.h1>
               <motion.p 
                 variants={fadeInUp}
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-300 leading-relaxed max-w-5xl mx-auto font-light" 
                 style={{ fontWeight: 300, lineHeight: '1.4' }}
               >
-                Founded on the principle that every business has untapped potential, RT Dynamic 
-                has been the trusted partner for organizations seeking transformational change.
+                RT Dynamic is founded on a single principle: every business holds untapped potential. We are the trusted partners for organizations ready for transformational change. Our team, led by seasoned Chartered Accountants, brings a wealth of experience from diverse and demanding industries to the table. We don't just offer services; we build partnerships that foster growth, innovation, and long-term success.
               </motion.p>
             </motion.div>
           </div>
