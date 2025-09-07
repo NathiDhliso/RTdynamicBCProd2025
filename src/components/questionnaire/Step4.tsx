@@ -147,19 +147,19 @@ const Step4: React.FC = () => {
     >
       <div className="mb-8">
         <div className="flex items-center mb-4">
-          <Target className="h-8 w-8 text-accent mr-3" />
-          <h2 className="text-3xl font-serif font-bold text-primary">
-            Goals & Contact
+          <Target className="h-8 w-8 text-emerald-300 mr-3" strokeWidth={1.5} />
+          <h2 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight" style={{ fontWeight: 200 }}>
+            Goals & <span className="text-emerald-300">Contact</span>
           </h2>
         </div>
-        <p className="text-text-secondary">
+        <p className="text-slate-400 text-lg font-light" style={{ fontWeight: 300, lineHeight: '1.6' }}>
           Finally, tell us about your objectives and how we can reach you.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Primary Goal *
           </label>
           <div className="space-y-2">
@@ -171,7 +171,7 @@ const Step4: React.FC = () => {
                   value={goal}
                   className="mr-3 text-accent focus:ring-accent"
                 />
-                <span>{goal}</span>
+                <span className="text-white font-light" style={{ fontWeight: 300 }}>{goal}</span>
               </label>
             ))}
           </div>
@@ -181,14 +181,14 @@ const Step4: React.FC = () => {
         </div>
 
         <div>
-          <label htmlFor="businessChallenges" className="block text-text-primary font-semibold mb-2">
+          <label htmlFor="businessChallenges" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             What are your main business challenges? *
           </label>
           <textarea
             id="businessChallenges"
             {...register('businessChallenges')}
             rows={5}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent transition-colors resize-vertical"
+            className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white placeholder-slate-400 font-light resize-vertical" style={{ fontWeight: 300 }}
             placeholder="Please describe your current business challenges, pain points, and areas where you need support. The more detail you provide, the better we can tailor our recommendations to your specific needs..."
           />
           {errors.businessChallenges && (
@@ -198,13 +198,13 @@ const Step4: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="contactName" className="block text-text-primary font-semibold mb-2">
+            <label htmlFor="contactName" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
               Contact Name *
             </label>
             <input
               id="contactName"
               {...register('contactName')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+              className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white placeholder-slate-400 font-light" style={{ fontWeight: 300 }}
               placeholder="Your full name"
             />
             {errors.contactName && (
@@ -213,13 +213,13 @@ const Step4: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="phoneNumber" className="block text-text-primary font-semibold mb-2">
+            <label htmlFor="phoneNumber" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
               Phone Number *
             </label>
             <input
               id="phoneNumber"
               {...register('phoneNumber')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+              className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white placeholder-slate-400 font-light" style={{ fontWeight: 300 }}
               placeholder="Your phone number"
             />
             {errors.phoneNumber && (
@@ -229,14 +229,14 @@ const Step4: React.FC = () => {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-text-primary font-semibold mb-2">
+          <label htmlFor="email" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Email Address *
           </label>
           <input
             id="email"
             type="email"
             {...register('email')}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+            className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white placeholder-slate-400 font-light" style={{ fontWeight: 300 }}
             placeholder="your.email@company.com"
           />
           {errors.email && (
@@ -245,9 +245,9 @@ const Step4: React.FC = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-secondary p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-primary mb-4">Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="backdrop-blur-xl bg-slate-800/20 border border-slate-700/30 p-6 rounded-xl">
+          <h3 className="text-lg font-light text-white mb-4" style={{ fontWeight: 300 }}>Summary</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
             <div>
               <p><span className="font-medium">Company:</span> {formData.companyName || 'Not specified'}</p>
               <p><span className="font-medium">Entity Type:</span> {formData.entityType || 'Not specified'}</p>
@@ -265,7 +265,7 @@ const Step4: React.FC = () => {
           <button
             type="button"
             onClick={prevStep}
-            className="flex-1 bg-gray-200 text-text-primary font-semibold py-4 px-6 rounded-md hover:bg-gray-300 transition-colors flex items-center justify-center group"
+            className="flex-1 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 text-white font-light py-4 px-6 rounded-xl hover:bg-slate-700/40 transition-all duration-300 flex items-center justify-center group" style={{ fontWeight: 300 }}
           >
             <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             Previous
@@ -273,7 +273,7 @@ const Step4: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-accent text-white font-semibold py-4 px-6 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group"
+            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group shadow-xl hover:shadow-2xl" style={{ fontWeight: 500 }}
           >
             {isSubmitting ? (
               <>

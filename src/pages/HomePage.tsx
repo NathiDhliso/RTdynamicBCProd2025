@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
+// Removed SplitText - premium plugin that requires license
 import { ArrowRight, TrendingUp, Users, Award, Shield, Target, Zap, Phone, Mail, MapPin } from 'lucide-react';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import Modal from '@/components/Modal';
 
 // Register GSAP plugins
-gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const HomePage: React.FC = () => {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -455,23 +455,27 @@ const HomePage: React.FC = () => {
       }
     });
 
-    // Section titles with typewriter effect
+    // Section titles with simple fade-in effect
     gsap.utils.toArray<HTMLElement>(".gsap-section-title").forEach(title => {
-      const splitText = new SplitText(title, { type: "chars, words" });
-      
-      gsap.from(splitText.chars, {
-        opacity: 0,
-        y: 50,
-        rotationX: -90,
-        stagger: 0.02,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: title,
-          start: "top 80%",
-          toggleActions: "play none none reverse"
+      gsap.fromTo(title, 
+        {
+          opacity: 0,
+          y: 30,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: title,
+            start: "top 80%",
+            toggleActions: "play none none reverse"
+          }
         }
-      });
+      );
     });
 
     // CTA section with pulse effect
@@ -636,14 +640,14 @@ const HomePage: React.FC = () => {
       
       <div ref={smoothScrollRef} className="relative z-10 min-h-screen">
         {/* Hero Section with Enhanced Parallax */}
-        <section ref={heroRef} className="text-white relative gsap-hero-section min-h-screen flex items-center">
+        <section ref={heroRef} className="text-white relative gsap-hero-section min-h-screen flex items-center pt-20 md:pt-24">
           <div className="gsap-hero-bg-shape absolute -top-1/3 -left-1/3 w-2/3 h-2/3 bg-gradient-to-br from-emerald-500/10 to-slate-400/5 rounded-full filter blur-3xl"></div>
           <div className="gsap-hero-bg-shape absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-tl from-slate-600/10 to-emerald-400/8 rounded-full filter blur-2xl"></div>
           <div className="gsap-hero-bg-shape absolute top-1/4 right-1/3 w-1/4 h-1/4 bg-gradient-to-bl from-emerald-300/8 to-transparent rounded-full filter blur-xl"></div>
           
           <div ref={heroContentRef} className="container mx-auto px-8 sm:px-10 lg:px-16 xl:px-20 relative z-10 w-full">
             <div className="max-w-6xl mx-auto text-center">
-              {/* FIX: Wrapper to contain the SplitText character animation */}
+              {/* Hero title with enhanced styling */}
               <div style={{ overflow: 'hidden' }}>
                 <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9] gsap-hero-title" style={{ 
                   fontFamily: '"Inter", "SF Pro Display", system-ui, sans-serif', 

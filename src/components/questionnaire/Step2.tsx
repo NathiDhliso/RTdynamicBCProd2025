@@ -70,7 +70,7 @@ const Step2: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Do you have employees? *
           </label>
           <div className="space-y-2">
@@ -81,7 +81,7 @@ const Step2: React.FC = () => {
                 value="Yes, I have employees"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Yes, I have employees</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, I have employees</span>
             </label>
             <label className="flex items-center">
               <input
@@ -90,7 +90,7 @@ const Step2: React.FC = () => {
                 value="No, I work alone"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>No, I work alone</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No, I work alone</span>
             </label>
           </div>
           {errors.hasEmployees && (
@@ -100,26 +100,26 @@ const Step2: React.FC = () => {
 
         {hasEmployees === 'Yes, I have employees' && (
           <div>
-            <label htmlFor="employeeCount" className="block text-text-primary font-semibold mb-2">
+            <label htmlFor="employeeCount" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
               How many employees? *
             </label>
             <select
               id="employeeCount"
               {...register('employeeCount')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+              className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white font-light" style={{ fontWeight: 300 }}
             >
-              <option value="">Select employee count</option>
-              {employeeCounts.map((count) => (
-                <option key={count} value={count}>
-                  {count}
-                </option>
-              ))}
+              <option value="" className="bg-slate-800 text-white">Select employee count</option>
+                {employeeCounts.map((count) => (
+                  <option key={count} value={count} className="bg-slate-800 text-white">
+                    {count}
+                  </option>
+                ))}
             </select>
           </div>
         )}
 
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Do you manage stock/inventory? *
           </label>
           <div className="space-y-2">
@@ -130,7 +130,7 @@ const Step2: React.FC = () => {
                 value="Yes, significant stock"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Yes, significant stock</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, significant stock</span>
             </label>
             <label className="flex items-center">
               <input
@@ -139,7 +139,7 @@ const Step2: React.FC = () => {
                 value="Yes, minimal stock"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Yes, minimal stock</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, minimal stock</span>
             </label>
             <label className="flex items-center">
               <input
@@ -148,7 +148,7 @@ const Step2: React.FC = () => {
                 value="No stock"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>No stock</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No stock</span>
             </label>
           </div>
           {errors.managesStock && (
@@ -157,7 +157,7 @@ const Step2: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Do you deal in foreign currency? *
           </label>
           <div className="space-y-2">
@@ -168,7 +168,7 @@ const Step2: React.FC = () => {
                 value="Yes, regularly"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Yes, regularly</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, regularly</span>
             </label>
             <label className="flex items-center">
               <input
@@ -177,7 +177,7 @@ const Step2: React.FC = () => {
                 value="Yes, occasionally"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Yes, occasionally</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, occasionally</span>
             </label>
             <label className="flex items-center">
               <input
@@ -186,7 +186,7 @@ const Step2: React.FC = () => {
                 value="No"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>No</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No</span>
             </label>
           </div>
           {errors.dealsForeignCurrency && (
@@ -198,14 +198,14 @@ const Step2: React.FC = () => {
           <button
             type="button"
             onClick={prevStep}
-            className="flex-1 bg-gray-200 text-text-primary font-semibold py-4 px-6 rounded-md hover:bg-gray-300 transition-colors flex items-center justify-center group"
+            className="flex-1 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 text-white font-light py-4 px-6 rounded-xl hover:bg-slate-700/40 transition-all duration-300 flex items-center justify-center group" style={{ fontWeight: 300 }}
           >
             <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             Previous
           </button>
           <button
             type="submit"
-            className="flex-1 bg-accent text-white font-semibold py-4 px-6 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center group"
+            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group shadow-xl hover:shadow-2xl" style={{ fontWeight: 500 }}
           >
             Continue
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />

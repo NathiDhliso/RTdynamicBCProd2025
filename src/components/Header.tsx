@@ -74,7 +74,8 @@ const Header: React.FC = () => {
               style={{ filter: 'drop-shadow(0 1px 2px rgba(16, 185, 129, 0.2))' }}
             />
             <span className="text-2xl font-light text-white" style={{ fontWeight: 300 }}>
-              RT Dynamic Business Consulting
+              <span className="hidden sm:inline">RT Dynamic Business Consulting</span>
+              <span className="sm:hidden">RT Dynamic BC</span>
             </span>
           </Link>
 

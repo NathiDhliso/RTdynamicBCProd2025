@@ -57,7 +57,7 @@ const Step3: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Tax compliance complexity *
           </label>
           <div className="space-y-2">
@@ -68,7 +68,7 @@ const Step3: React.FC = () => {
                 value="Simple - Basic tax returns"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Simple - Basic tax returns</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Simple - Basic tax returns</span>
             </label>
             <label className="flex items-center">
               <input
@@ -77,7 +77,7 @@ const Step3: React.FC = () => {
                 value="Moderate - Some complexity"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Moderate - Some complexity</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Moderate - Some complexity</span>
             </label>
             <label className="flex items-center">
               <input
@@ -86,7 +86,7 @@ const Step3: React.FC = () => {
                 value="Complex - Multiple tax obligations"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Complex - Multiple tax obligations</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Complex - Multiple tax obligations</span>
             </label>
           </div>
           {errors.taxComplexity && (
@@ -95,7 +95,7 @@ const Step3: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Audit requirements *
           </label>
           <div className="space-y-2">
@@ -106,7 +106,7 @@ const Step3: React.FC = () => {
                 value="Annual audit required"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Annual audit required</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Annual audit required</span>
             </label>
             <label className="flex items-center">
               <input
@@ -115,7 +115,7 @@ const Step3: React.FC = () => {
                 value="Audit optional"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Audit optional</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Audit optional</span>
             </label>
             <label className="flex items-center">
               <input
@@ -124,7 +124,7 @@ const Step3: React.FC = () => {
                 value="No audit required"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>No audit required</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No audit required</span>
             </label>
           </div>
           {errors.auditRequirements && (
@@ -133,7 +133,7 @@ const Step3: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-text-primary font-semibold mb-3">
+          <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Regulatory reporting *
           </label>
           <div className="space-y-2">
@@ -144,7 +144,7 @@ const Step3: React.FC = () => {
                 value="Extensive reporting required"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Extensive reporting required</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Extensive reporting required</span>
             </label>
             <label className="flex items-center">
               <input
@@ -153,7 +153,7 @@ const Step3: React.FC = () => {
                 value="Moderate reporting"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Moderate reporting</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Moderate reporting</span>
             </label>
             <label className="flex items-center">
               <input
@@ -162,7 +162,7 @@ const Step3: React.FC = () => {
                 value="Minimal reporting"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span>Minimal reporting</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Minimal reporting</span>
             </label>
           </div>
           {errors.regulatoryReporting && (
@@ -174,14 +174,14 @@ const Step3: React.FC = () => {
           <button
             type="button"
             onClick={prevStep}
-            className="flex-1 bg-gray-200 text-text-primary font-semibold py-4 px-6 rounded-md hover:bg-gray-300 transition-colors flex items-center justify-center group"
+            className="flex-1 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 text-white font-light py-4 px-6 rounded-xl hover:bg-slate-700/40 transition-all duration-300 flex items-center justify-center group" style={{ fontWeight: 300 }}
           >
             <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             Previous
           </button>
           <button
             type="submit"
-            className="flex-1 bg-accent text-white font-semibold py-4 px-6 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center group"
+            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group shadow-xl hover:shadow-2xl" style={{ fontWeight: 500 }}
           >
             Continue
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
