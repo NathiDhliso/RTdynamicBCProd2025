@@ -652,12 +652,12 @@ const HomePage: React.FC = () => {
                   <span className="block text-emerald-300 font-extralight mt-2 sm:mt-3" style={{ fontWeight: 200 }}>& Strategic Business Advisors</span>
                 </h1>
               </div>
-              <p className="text-lg sm:text-xl md:text-xl lg:text-2xl mb-10 sm:mb-12 text-slate-300 leading-relaxed max-w-5xl mx-auto font-light gsap-hero-subtitle" style={{ 
+              <p className="text-base sm:text-lg md:text-lg lg:text-xl mb-10 sm:mb-12 text-slate-300 leading-relaxed max-w-4xl mx-auto font-light gsap-hero-subtitle" style={{ 
                 fontWeight: 300, 
-                lineHeight: '1.4', 
+                lineHeight: '1.5', 
                 willChange: 'transform, opacity' 
               }}>
-                RT Dynamic Business Consulting is a powerhouse of chartered accountants and strategic business advisors dedicated to unlocking your business's full potential. With a proven track record in diverse sectors, including banking, telecommunications, and mining, we provide bespoke financial and strategic solutions that drive sustainable growth and ensure regulatory compliance. Our partnership approach means we work as an extension of your team, committed to your success.
+                Unlock your business potential with proven expertise across banking, telecommunications, and mining. We deliver bespoke financial solutions that drive growth and ensure compliance—working as your trusted strategic partner.
               </p>
               <div className="flex flex-col sm:flex-row gap-5 sm:gap-7 justify-center max-w-2xl mx-auto gsap-hero-buttons" style={{ willChange: 'transform, opacity' }}>
                 <Link to="/questionnaire" className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-10 sm:px-12 py-5 sm:py-6 rounded-2xl font-medium transition-all duration-500 flex items-center justify-center group text-base sm:text-lg shadow-xl hover:shadow-2xl border border-emerald-400/20 transform hover:scale-105" style={{ fontWeight: 500 }}>
