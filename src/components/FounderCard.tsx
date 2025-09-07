@@ -1,7 +1,25 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { gsap } from 'gsap';
-import { Linkedin, Twitter, Mail, Award, GraduationCap } from 'lucide-react';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Linkedin, Twitter, Mail, Award, GraduationCap, Briefcase, BookOpen, Trophy } from 'lucide-react';
+
+// Custom hook for reduced motion preference
+const usePrefersReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+  
+  return prefersReducedMotion;
+};
 
 interface FounderCardProps {
   name: string;
@@ -20,130 +38,128 @@ interface FounderCardProps {
 const FounderCard: React.FC<FounderCardProps> = ({
   name,
   title,
-  bio: _bio,
+  bio,
   expertise,
   experience,
   education,
   achievements,
-  image: _image,
+  image,
   linkedin,
   twitter,
   email,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const frontRef = useRef<HTMLDivElement>(null);
-  const backRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    if (prefersReducedMotion || !cardRef.current) return;
-
-    // Set initial states
-    gsap.set(backRef.current, { rotationX: 180 });
-    gsap.set([frontRef.current, backRef.current], { backfaceVisibility: 'hidden' });
-  }, [prefersReducedMotion]);
-
-  const handleFlip = () => {
-    if (prefersReducedMotion) {
-      setIsFlipped(!isFlipped);
+  const handleFlip = (e: React.MouseEvent) => {
+    // Don't flip if clicking on scrollable content or interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('.custom-scrollbar') || target.closest('a')) {
       return;
     }
-
-    const tl = gsap.timeline();
-    
-    if (!isFlipped) {
-      // Flip to back
-      tl.to(frontRef.current, { 
-        rotationX: -180, 
-        duration: 0.6, 
-        ease: 'power2.inOut' 
-      })
-      .to(backRef.current, { 
-        rotationX: 0, 
-        duration: 0.6, 
-        ease: 'power2.inOut' 
-      }, 0);
-    } else {
-      // Flip to front
-      tl.to(backRef.current, { 
-        rotationX: 180, 
-        duration: 0.6, 
-        ease: 'power2.inOut' 
-      })
-      .to(frontRef.current, { 
-        rotationX: 0, 
-        duration: 0.6, 
-        ease: 'power2.inOut' 
-      }, 0);
-    }
-    
     setIsFlipped(!isFlipped);
   };
 
   return (
-    <div className="h-96" style={{ perspective: '1000px' }}>
-      <div
-        ref={cardRef}
-        className="relative w-full h-full cursor-pointer transition-transform duration-600"
+    <div 
+      className="h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative cursor-pointer"
+      style={{ perspective: '1500px' }}
+      onClick={handleFlip}
+    >
+      <motion.div
+        className="relative w-full h-full"
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 1.0, type: "spring", stiffness: 80 }}
         style={{ transformStyle: 'preserve-3d' }}
-        onClick={handleFlip}
       >
         {/* Front of Card */}
         <div
-          ref={frontRef}
-          className={`absolute inset-0 w-full h-full rounded-lg shadow-2xl overflow-hidden ${
-            prefersReducedMotion && isFlipped ? 'hidden' : 'block'
-          }`}
+          className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white relative">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-4 right-4 w-20 h-20 border border-white/20 rounded-full" />
-              <div className="absolute bottom-4 left-4 w-16 h-16 border border-white/20 rounded" />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/10 rounded-full" />
+          <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white relative">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-4 right-4 w-24 h-24 border-2 border-white/30 rounded-full animate-pulse" />
+              <div className="absolute bottom-4 left-4 w-20 h-20 border-2 border-white/20 rounded-lg animate-pulse delay-75" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full animate-spin-slow" />
             </div>
             
-            <div className="p-8 h-full flex flex-col justify-between relative z-10">
+            <div className="p-6 sm:p-8 h-full flex flex-col justify-between relative z-10">
               <div>
                 <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                    <Award className="h-10 w-10 text-white" />
+                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-400/30 to-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md shadow-lg overflow-hidden transform-gpu" style={{
+                    transform: 'translateZ(30px)',
+                    boxShadow: '0 12px 24px rgba(0,0,0,0.4), 0 8px 16px rgba(16, 185, 129, 0.2) inset, 0 0 20px rgba(16, 185, 129, 0.3)'
+                  }}>
+                    <img 
+                      src={image} 
+                      alt={name} 
+                      className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <Award className="h-12 w-12 text-white drop-shadow-lg hidden" />
                   </div>
-                  <h3 className="font-bold text-xl mb-1">{name}</h3>
-                  <p className="text-white/90 text-sm mb-2">{title}</p>
-                  <div className="bg-white/20 text-white border-white/30 px-3 py-1 rounded-full text-xs inline-block">
-                    CA(SA)
+                  <h3 className="font-bold text-2xl mb-2 transform-gpu" style={{ 
+                    textShadow: '0 4px 8px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.3)',
+                    transform: 'translateZ(20px)'
+                  }}>{name}</h3>
+                  <p className="text-white/90 text-sm mb-3 transform-gpu" style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                    transform: 'translateZ(15px)'
+                  }}>{title}</p>
+                  <div className="bg-gradient-to-r from-emerald-500/30 to-blue-500/30 backdrop-blur-sm text-white border border-white/40 px-4 py-1.5 rounded-full text-xs inline-block font-semibold shadow-lg transform-gpu" style={{
+                    transform: 'translateZ(22px)',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.3), 0 4px 8px rgba(16, 185, 129, 0.2) inset',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                  }}>
+                    CA(SA) • SAICA Member
                   </div>
                 </div>
                 
                 <div>
-                  <h4 className="font-semibold text-lg mb-3 text-center">Core Skills</h4>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h4 className="font-semibold text-lg mb-4 text-center text-emerald-300 transform-gpu" style={{
+                    textShadow: '0 0 10px rgba(16, 185, 129, 0.5), 0 4px 8px rgba(0,0,0,0.3)',
+                    transform: 'translateZ(25px)'
+                  }}>Core Expertise</h4>
+                  <div className="grid grid-cols-2 gap-2.5">
                     {expertise.slice(0, 6).map((skill, index) => (
                       <div
                         key={index}
-                        className="bg-white/20 backdrop-blur-sm rounded-lg p-2 text-center"
+                        className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md rounded-lg p-2.5 text-center shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 transform-gpu"
+                        style={{
+                          transform: 'translateZ(10px)',
+                          boxShadow: '0 8px 16px rgba(0,0,0,0.3), 0 4px 8px rgba(255,255,255,0.1) inset'
+                        }}
                       >
-                        <span className="text-xs font-medium">{skill}</span>
+                        <span className="text-xs font-medium transform-gpu" style={{
+                          textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 0 8px rgba(255,255,255,0.2)',
+                          transform: 'translateZ(5px)'
+                        }}>{skill}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
               
-              <div className="text-center">
-                <div className="flex justify-center space-x-3 mb-2">
+              <div className="text-center mt-4">
+                <div className="flex justify-center space-x-4 mb-3">
                   {linkedin && (
                     <a
                       href={linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/80 hover:text-white transition-colors"
+                      className="text-white/70 hover:text-emerald-300 transition-all duration-300 transform hover:scale-110 transform-gpu"
+                      style={{
+                        transform: 'translateZ(15px)',
+                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3)) drop-shadow(0 0 8px rgba(16, 185, 129, 0.2))'
+                      }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Linkedin className="h-5 w-5" />
+                      <Linkedin className="h-6 w-6" />
                     </a>
                   )}
                   {twitter && (
@@ -151,23 +167,34 @@ const FounderCard: React.FC<FounderCardProps> = ({
                       href={twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/80 hover:text-white transition-colors"
+                      className="text-white/70 hover:text-blue-300 transition-all duration-300 transform hover:scale-110 transform-gpu"
+                      style={{
+                        transform: 'translateZ(15px)',
+                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3)) drop-shadow(0 0 8px rgba(59, 130, 246, 0.2))'
+                      }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Twitter className="h-5 w-5" />
+                      <Twitter className="h-6 w-6" />
                     </a>
                   )}
                   {email && (
                     <a
                       href={`mailto:${email}`}
-                      className="text-white/80 hover:text-white transition-colors"
+                      className="text-white/70 hover:text-amber-300 transition-all duration-300 transform hover:scale-110 transform-gpu"
+                      style={{
+                        transform: 'translateZ(15px)',
+                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3)) drop-shadow(0 0 8px rgba(245, 158, 11, 0.2))'
+                      }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Mail className="h-5 w-5" />
+                      <Mail className="h-6 w-6" />
                     </a>
                   )}
                 </div>
-                <span className="text-white/70 text-xs">Click to flip for details</span>
+                <span className="text-white/60 text-xs font-medium animate-pulse transform-gpu" style={{
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.2)',
+                  transform: 'translateZ(12px)'
+                }}>Click to view details →</span>
               </div>
             </div>
           </div>
@@ -175,103 +202,138 @@ const FounderCard: React.FC<FounderCardProps> = ({
 
         {/* Back of Card */}
         <div
-          ref={backRef}
-          className={`absolute inset-0 w-full h-full rounded-lg shadow-2xl overflow-hidden ${
-            prefersReducedMotion && !isFlipped ? 'hidden' : 'block'
-          }`}
+          className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
           style={{ 
             backfaceVisibility: 'hidden',
-            transform: 'rotateX(180deg)'
+            transform: 'rotateY(180deg)'
           }}
         >
           <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
+            {/* Animated Grid Pattern */}
+            <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 left-0 w-full h-full">
-                <div className="grid grid-cols-8 grid-rows-12 h-full">
-                  {Array.from({ length: 96 }).map((_, i) => (
-                    <div key={i} className="border border-white/10" />
+                <div className="grid grid-cols-8 grid-rows-8 h-full">
+                  {Array.from({ length: 64 }).map((_, i) => (
+                    <div key={i} className="border border-emerald-500/20 animate-pulse" style={{ animationDelay: `${i * 20}ms` }} />
                   ))}
                 </div>
               </div>
             </div>
             
-            <div className="p-8 h-full flex flex-col justify-between relative z-10">
+            <div className="p-4 sm:p-5 h-full flex flex-col relative z-10">
               <div className="flex flex-col h-full">
                 {/* Header Section */}
-                <div className="text-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="text-center mb-4 flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/30 to-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-2 backdrop-blur-sm shadow-lg">
                     <GraduationCap className="h-6 w-6 text-emerald-300" />
                   </div>
-                  <h3 className="font-bold text-base mb-1">{name}</h3>
-                  <p className="text-gray-300 text-xs mb-1">{title}</p>
-                  <p className="text-emerald-300 text-xs">CA(SA), SAICA Member</p>
+                  <h3 className="font-bold text-base mb-1 transform-gpu" style={{
+                    textShadow: '0 4px 8px rgba(0,0,0,0.6), 0 0 12px rgba(16, 185, 129, 0.3)',
+                    transform: 'translateZ(20px)'
+                  }}>{name}</h3>
+                  <p className="text-gray-300 text-xs mb-1 transform-gpu" style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                    transform: 'translateZ(15px)'
+                  }}>{title}</p>
+                  <p className="text-emerald-400 text-xs font-semibold transform-gpu" style={{
+                    textShadow: '0 0 8px rgba(16, 185, 129, 0.6), 0 2px 4px rgba(0,0,0,0.4)',
+                    transform: 'translateZ(18px)'
+                  }}>CA(SA), SAICA Member</p>
                 </div>
                 
-                {/* Content Section */}
-                <div className="flex-1 space-y-3 text-center">
-                  <div>
-                    <h4 className="font-semibold text-xs mb-1 text-emerald-300">Experience</h4>
-                    <p className="text-xs text-gray-300">{experience}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-xs mb-1 text-emerald-300">Education</h4>
-                    <p className="text-xs text-gray-300">{education}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-xs mb-1 text-emerald-300">Key Specializations</h4>
-                    <div className="grid grid-cols-2 gap-1 text-xs text-gray-300 text-center">
-                      {expertise.map((spec, index) => (
-                        <div key={index} className="text-xs">
-                          {spec}
-                        </div>
-                      ))}
+                {/* Content Section - Condensed */}
+                <div className="flex-1 space-y-3">
+                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm transform-gpu" style={{
+                    transform: 'translateZ(12px)',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.4), 0 4px 8px rgba(16, 185, 129, 0.1) inset'
+                  }}>
+                    <div className="flex items-center mb-2">
+                      <Award className="h-4 w-4 text-blue-400 mr-2" />
+                      <h4 className="font-semibold text-sm text-blue-400 transform-gpu" style={{
+                        textShadow: '0 0 8px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0,0,0,0.3)',
+                        transform: 'translateZ(8px)'
+                      }}>Professional Summary</h4>
                     </div>
+                    <p className="text-xs text-gray-300 leading-relaxed transform-gpu" style={{
+                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                      transform: 'translateZ(5px)'
+                    }}>{experience}</p>
                   </div>
                   
-                  <div>
-                    <h4 className="font-semibold text-xs mb-1 text-emerald-300">Key Achievements</h4>
-                    <div className="space-y-1">
+                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm transform-gpu" style={{
+                    transform: 'translateZ(12px)',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.4), 0 4px 8px rgba(245, 158, 11, 0.1) inset'
+                  }}>
+                    <div className="flex items-center mb-2">
+                      <Trophy className="h-4 w-4 text-amber-400 mr-2" />
+                      <h4 className="font-semibold text-sm text-amber-400 transform-gpu" style={{
+                        textShadow: '0 0 8px rgba(245, 158, 11, 0.5), 0 2px 4px rgba(0,0,0,0.3)',
+                        transform: 'translateZ(8px)'
+                      }}>Key Highlights</h4>
+                    </div>
+                    <ul className="space-y-1">
                       {achievements.slice(0, 3).map((achievement, index) => (
-                        <div key={index} className="text-xs text-gray-300">
-                          {achievement}
-                        </div>
+                        <li key={index} className="text-xs text-gray-300 leading-relaxed flex items-start transform-gpu" style={{
+                          textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                          transform: 'translateZ(5px)'
+                        }}>
+                          <span className="text-amber-400 mr-2 transform-gpu" style={{
+                            textShadow: '0 0 6px rgba(245, 158, 11, 0.6)',
+                            transform: 'translateZ(3px)'
+                          }}>•</span>
+                          <span>{achievement}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                   
-                  <div>
-                    <h4 className="font-semibold text-xs mb-1 text-emerald-300">Contact</h4>
-                    <div className="flex justify-center space-x-3 text-gray-400">
-                      {email && (
-                        <a href={`mailto:${email}`} onClick={(e) => e.stopPropagation()}>
-                          <Mail className="h-3 w-3" />
-                        </a>
-                      )}
-                      {linkedin && (
-                        <a href={linkedin} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                          <Linkedin className="h-3 w-3" />
-                        </a>
-                      )}
-                      {twitter && (
-                        <a href={twitter} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                          <Twitter className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
+
                 </div>
                 
-                <div className="text-center pt-2">
-                  <span className="text-gray-400 text-xs">Click to flip back</span>
+                <div className="text-center pt-3 flex-shrink-0 border-t border-gray-700/50 mt-3">
+                  <span className="text-gray-400 text-xs font-medium transform-gpu" style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(156, 163, 175, 0.3)',
+                    transform: 'translateZ(10px)'
+                  }}>← Click to flip back</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
+      
+      <style>{`
+        @keyframes spin-slow {
+          from {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          to {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 2px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(16, 185, 129, 0.5);
+          border-radius: 2px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(16, 185, 129, 0.7);
+        }
+      `}</style>
     </div>
   );
 };
