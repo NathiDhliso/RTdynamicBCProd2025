@@ -227,73 +227,60 @@ const FounderCard: React.FC<FounderCardProps> = ({
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/30 to-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-2 backdrop-blur-sm shadow-lg">
                     <GraduationCap className="h-6 w-6 text-emerald-300" />
                   </div>
-                  <h3 className="font-bold text-base mb-1 transform-gpu" style={{
-                    textShadow: '0 4px 8px rgba(0,0,0,0.6), 0 0 12px rgba(16, 185, 129, 0.3)',
-                    transform: 'translateZ(20px)'
+                  <h3 className="font-bold text-base mb-1" style={{
+                    textShadow: '0 4px 8px rgba(0,0,0,0.6), 0 0 12px rgba(16, 185, 129, 0.3)'
                   }}>{name}</h3>
-                  <p className="text-gray-300 text-xs mb-1 transform-gpu" style={{
-                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                    transform: 'translateZ(15px)'
+                  <p className="text-gray-300 text-xs mb-1" style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)'
                   }}>{title}</p>
-                  <p className="text-emerald-400 text-xs font-semibold transform-gpu" style={{
-                    textShadow: '0 0 8px rgba(16, 185, 129, 0.6), 0 2px 4px rgba(0,0,0,0.4)',
-                    transform: 'translateZ(18px)'
+                  <p className="text-emerald-400 text-xs font-semibold" style={{
+                    textShadow: '0 0 8px rgba(16, 185, 129, 0.6), 0 2px 4px rgba(0,0,0,0.4)'
                   }}>CA(SA), SAICA Member</p>
                 </div>
                 
                 {/* Content Section - Condensed */}
                 <div className="flex-1 space-y-3">
-                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm transform-gpu" style={{
-                    transform: 'translateZ(12px)',
+                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm" style={{
                     boxShadow: '0 8px 16px rgba(0,0,0,0.4), 0 4px 8px rgba(16, 185, 129, 0.1) inset'
                   }}>
                     <div className="flex items-center mb-2">
                       <Award className="h-4 w-4 text-blue-400 mr-2" />
-                      <h4 className="font-semibold text-sm text-blue-400 transform-gpu" style={{
-                        textShadow: '0 0 8px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0,0,0,0.3)',
-                        transform: 'translateZ(8px)'
+                      <h4 className="font-semibold text-sm text-blue-400" style={{
+                        textShadow: '0 0 8px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0,0,0,0.3)'
                       }}>Professional Summary</h4>
                     </div>
-                    <p className="text-xs text-gray-300 leading-relaxed transform-gpu" style={{
-                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
-                      transform: 'translateZ(5px)'
+                    <p className="text-xs text-gray-300 leading-relaxed" style={{
+                      textShadow: '0 1px 3px rgba(0,0,0,0.4)'
                     }}>{experience}</p>
                   </div>
                   
-                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm transform-gpu" style={{
-                    transform: 'translateZ(12px)',
+                  <div className="bg-gray-800/50 rounded-lg p-3 backdrop-blur-sm" style={{
                     boxShadow: '0 8px 16px rgba(0,0,0,0.4), 0 4px 8px rgba(245, 158, 11, 0.1) inset'
                   }}>
                     <div className="flex items-center mb-2">
                       <Trophy className="h-4 w-4 text-amber-400 mr-2" />
-                      <h4 className="font-semibold text-sm text-amber-400 transform-gpu" style={{
-                        textShadow: '0 0 8px rgba(245, 158, 11, 0.5), 0 2px 4px rgba(0,0,0,0.3)',
-                        transform: 'translateZ(8px)'
+                      <h4 className="font-semibold text-sm text-amber-400" style={{
+                        textShadow: '0 0 8px rgba(245, 158, 11, 0.5), 0 2px 4px rgba(0,0,0,0.3)'
                       }}>Key Highlights</h4>
                     </div>
                     <ul className="space-y-1">
                       {achievements.slice(0, 3).map((achievement, index) => (
-                        <li key={index} className="text-xs text-gray-300 leading-relaxed flex items-start transform-gpu" style={{
-                          textShadow: '0 1px 3px rgba(0,0,0,0.4)',
-                          transform: 'translateZ(5px)'
+                        <li key={index} className="text-xs text-gray-300 leading-relaxed flex items-start" style={{
+                          textShadow: '0 1px 3px rgba(0,0,0,0.4)'
                         }}>
-                          <span className="text-amber-400 mr-2 transform-gpu" style={{
-                            textShadow: '0 0 6px rgba(245, 158, 11, 0.6)',
-                            transform: 'translateZ(3px)'
+                          <span className="text-amber-400 mr-2" style={{
+                            textShadow: '0 0 6px rgba(245, 158, 11, 0.6)'
                           }}>•</span>
                           <span>{achievement}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  
-
                 </div>
                 
                 <div className="text-center pt-3 flex-shrink-0 border-t border-gray-700/50 mt-3">
-                  <span className="text-gray-400 text-xs font-medium transform-gpu" style={{
-                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(156, 163, 175, 0.3)',
-                    transform: 'translateZ(10px)'
+                  <span className="text-gray-400 text-xs font-medium" style={{
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 8px rgba(156, 163, 175, 0.3)'
                   }}>← Click to flip back</span>
                 </div>
               </div>
