@@ -35,43 +35,47 @@ const createContactEmailTemplate = (formData) => {
           .email-wrapper { 
             width: 100%; 
             max-width: 800px; 
-            margin: 0 auto; 
+            margin: 40px auto; 
             background-color: #ffffff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            overflow: hidden;
           }
           .header { 
             background: linear-gradient(135deg, #10b981, #059669); 
             color: white; 
-            padding: 30px; 
+            padding: 50px 40px; 
             text-align: center;
-            border-radius: 0;
           }
           .header h1 { 
-            margin: 0 0 10px 0; 
-            font-size: 28px; 
-            font-weight: 600;
+            margin: 0 0 16px 0; 
+            font-size: 32px; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
           }
           .header p { 
-            margin: 0; 
-            font-size: 16px; 
-            opacity: 0.9;
+            margin: 0 0 20px 0; 
+            font-size: 18px; 
+            opacity: 0.95;
+            font-weight: 300;
           }
           .content { 
-            padding: 40px;
+            padding: 50px 40px;
             background: #ffffff;
           }
           .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
+            gap: 30px;
+            margin-bottom: 40px;
           }
           .field { 
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 28px 24px;
             transition: all 0.3s ease;
+            position: relative;
           }
           .field:hover {
             border-color: #10b981;
@@ -80,45 +84,50 @@ const createContactEmailTemplate = (formData) => {
           .label { 
             font-weight: 600; 
             color: #059669; 
-            margin-bottom: 8px; 
+            margin-bottom: 12px; 
             display: flex;
             align-items: center;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
           }
           .label-icon {
-            margin-right: 8px;
-            font-size: 16px;
+            margin-right: 10px;
+            font-size: 18px;
           }
           .value { 
             color: #1f2937;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 500;
             word-break: break-word;
+            line-height: 1.5;
           }
           .message-field {
             grid-column: 1 / -1;
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
+            padding: 32px 28px;
           }
           .message-content {
             background: white;
-            padding: 20px;
-            border-radius: 6px;
-            border-left: 4px solid #10b981;
+            padding: 28px;
+            border-radius: 10px;
+            border-left: 5px solid #10b981;
             white-space: pre-wrap;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-top: 10px;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-top: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
           }
           .timestamp {
             background: #1f2937;
             color: white;
-            padding: 15px 25px;
+            padding: 24px 32px;
             text-align: center;
-            font-size: 14px;
-            margin-top: 20px;
+            font-size: 15px;
+            margin-top: 40px;
+            border-radius: 0 0 16px 16px;
+            font-weight: 300;
           }
           .priority-badge {
             display: inline-block;
@@ -131,11 +140,22 @@ const createContactEmailTemplate = (formData) => {
             margin-left: 10px;
           }
           @media (max-width: 600px) {
+            .email-wrapper {
+              margin: 20px;
+              border-radius: 12px;
+            }
             .info-grid {
               grid-template-columns: 1fr;
+              gap: 20px;
             }
             .content {
-              padding: 20px;
+              padding: 30px 24px;
+            }
+            .header {
+              padding: 40px 24px;
+            }
+            .field {
+              padding: 24px 20px;
             }
           }
         </style>
@@ -238,67 +258,72 @@ const createQuestionnaireEmailTemplate = (formData) => {
           .email-wrapper { 
             width: 100%; 
             max-width: 900px; 
-            margin: 0 auto; 
+            margin: 40px auto; 
             background-color: #ffffff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            overflow: hidden;
           }
           .header { 
             background: linear-gradient(135deg, #10b981, #059669); 
             color: white; 
-            padding: 30px; 
+            padding: 50px 40px; 
             text-align: center;
           }
           .header h1 { 
-            margin: 0 0 10px 0; 
-            font-size: 28px; 
-            font-weight: 600;
+            margin: 0 0 16px 0; 
+            font-size: 32px; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
           }
           .header p { 
-            margin: 0; 
-            font-size: 16px; 
-            opacity: 0.9;
+            margin: 0 0 20px 0; 
+            font-size: 18px; 
+            opacity: 0.95;
+            font-weight: 300;
           }
           .content { 
-            padding: 40px;
+            padding: 50px 40px;
             background: #ffffff;
           }
           .section { 
-            margin-bottom: 35px;
+            margin-bottom: 45px;
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
           }
           .section-header {
             background: linear-gradient(90deg, #f0fdf4, #ecfdf5);
-            padding: 20px 25px;
+            padding: 28px 32px;
             border-bottom: 1px solid #d1fae5;
           }
           .section-title { 
-            font-size: 20px; 
+            font-size: 22px; 
             font-weight: 700; 
             color: #059669; 
             margin: 0;
             display: flex;
             align-items: center;
+            letter-spacing: -0.3px;
           }
           .section-icon {
-            margin-right: 12px;
-            font-size: 24px;
+            margin-right: 16px;
+            font-size: 26px;
           }
           .section-content {
-            padding: 25px;
+            padding: 32px;
           }
           .field-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
           }
           .field { 
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 18px;
+            border-radius: 12px;
+            padding: 24px 20px;
             transition: all 0.3s ease;
           }
           .field:hover {
@@ -308,17 +333,18 @@ const createQuestionnaireEmailTemplate = (formData) => {
           .label { 
             font-weight: 600; 
             color: #374151; 
-            margin-bottom: 8px; 
+            margin-bottom: 12px; 
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
           }
           .value { 
             color: #1f2937;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 500;
             word-break: break-word;
+            line-height: 1.5;
           }
           .highlight { 
             background: #ecfdf5 !important; 
@@ -334,62 +360,83 @@ const createQuestionnaireEmailTemplate = (formData) => {
           }
           .message-content {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #10b981;
+            padding: 28px;
+            border-radius: 12px;
+            border-left: 5px solid #10b981;
             white-space: pre-wrap;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-top: 10px;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-top: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
           }
           .summary-stats {
             background: linear-gradient(135deg, #1f2937, #374151);
             color: white;
-            padding: 25px;
+            padding: 40px 32px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+            margin: 40px 0;
+            border-radius: 16px;
           }
           .stat-item {
             text-align: center;
+            padding: 16px 0;
           }
           .stat-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: #10b981;
+            margin-bottom: 8px;
           }
           .stat-label {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 5px;
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 8px;
+            font-weight: 300;
           }
           .timestamp {
             background: #1f2937;
             color: white;
-            padding: 15px 25px;
+            padding: 24px 32px;
             text-align: center;
-            font-size: 14px;
+            font-size: 15px;
+            border-radius: 0 0 16px 16px;
+            font-weight: 300;
           }
           .priority-badge {
             display: inline-block;
             background: #f59e0b;
             color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
             font-weight: 600;
-            margin-left: 15px;
+            margin-left: 16px;
+            letter-spacing: 0.3px;
           }
           @media (max-width: 768px) {
+            .email-wrapper {
+              margin: 20px;
+              border-radius: 12px;
+            }
             .field-grid {
               grid-template-columns: 1fr;
+              gap: 20px;
             }
             .content {
-              padding: 20px;
+              padding: 30px 24px;
+            }
+            .header {
+              padding: 40px 24px;
+            }
+            .section-content {
+              padding: 24px;
             }
             .summary-stats {
               grid-template-columns: 1fr;
+              padding: 32px 24px;
+              gap: 24px;
             }
           }
         </style>
