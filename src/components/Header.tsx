@@ -71,7 +71,7 @@ const Header: React.FC = () => {
           <Link ref={logoRef} to="/" className="flex items-center space-x-2">
             <Building2 className="h-8 w-8 text-emerald-300" strokeWidth={1.5} />
             <span className="text-2xl font-light text-white" style={{ fontWeight: 300 }}>
-              RT Dynamic
+              RT Dynamic Business Consulting
             </span>
           </Link>
 

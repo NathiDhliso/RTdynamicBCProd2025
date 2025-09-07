@@ -319,10 +319,10 @@ const AboutPage = () => {
               className="max-w-6xl mx-auto"
             >
               <motion.div variants={fadeInUp} className="text-center mb-20 sm:mb-24">
-                <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
                   Meet Our <span className="text-emerald-300">Founders</span>
                 </h2>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-400 max-w-5xl mx-auto leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
+                <p className="text-lg sm:text-xl md:text-2xl text-slate-400 max-w-5xl mx-auto leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
                   Experienced leaders with a shared vision of transforming businesses through strategic innovation and operational excellence.
                 </p>
               </motion.div>
@@ -349,10 +349,10 @@ const AboutPage = () => {
               className="max-w-7xl mx-auto"
             >
               <motion.div variants={fadeInUp} className="text-center mb-20 sm:mb-24">
-                <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
                   Our Core <span className="text-emerald-300">Values</span>
                 </h2>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
+                <p className="text-lg sm:text-xl md:text-2xl text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
                   The principles that guide every client engagement and business decision.
                 </p>
               </motion.div>

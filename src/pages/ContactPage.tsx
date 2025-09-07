@@ -138,14 +138,14 @@ const ContactPage: React.FC = () => {
             >
               <motion.h1 
                 variants={fadeInUp}
-                className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
                 style={{ fontWeight: 300, letterSpacing: '-0.02em' }}
               >
                 Get In <span className="text-emerald-300 font-extralight" style={{ fontWeight: 200 }}>Touch</span>
               </motion.h1>
               <motion.p 
                 variants={fadeInUp}
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-300 leading-relaxed max-w-5xl mx-auto font-light" 
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-300 leading-relaxed max-w-5xl mx-auto font-light" 
                 style={{ fontWeight: 300, lineHeight: '1.4' }}
               >
                 Ready to transform your business? Let's start a conversation about your goals and challenges.
@@ -168,7 +168,7 @@ const ContactPage: React.FC = () => {
                 >
                   <motion.h2 
                     variants={fadeInUp}
-                    className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extralight text-white mb-10 sm:mb-12 tracking-tight" 
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-10 sm:mb-12 tracking-tight" 
                     style={{ fontWeight: 200, letterSpacing: '-0.01em' }}
                   >
                     Let's <span className="text-emerald-300">Connect</span>
@@ -184,24 +184,24 @@ const ContactPage: React.FC = () => {
                           {info.icon}
                         </div>
                         <div>
-                          <h3 className="font-light text-white text-lg" style={{ fontWeight: 300 }}>{info.title}</h3>
-                          <p className="text-lg text-emerald-300 font-medium" style={{ fontWeight: 500 }}>{info.value}</p>
-                          <p className="text-slate-400 text-sm font-light" style={{ fontWeight: 300 }}>{info.description}</p>
+                          <h3 className="font-light text-white text-base" style={{ fontWeight: 300 }}>{info.title}</h3>
+                          <p className="text-base text-emerald-300 font-medium" style={{ fontWeight: 500 }}>{info.value}</p>
+                          <p className="text-slate-400 text-xs font-light" style={{ fontWeight: 300 }}>{info.description}</p>
                         </div>
                       </motion.div>
                     ))}
                   </div>
 
                   <motion.div variants={fadeInUp} className="mt-10 p-8 backdrop-blur-xl bg-slate-800/20 rounded-3xl border border-slate-700/30">
-                    <h3 className="text-xl sm:text-2xl font-light text-white mb-4 tracking-tight" style={{ fontWeight: 300 }}>
+                    <h3 className="text-lg sm:text-xl font-light text-white mb-4 tracking-tight" style={{ fontWeight: 300 }}>
                       Prefer a Structured Approach?
                     </h3>
-                    <p className="text-slate-400 mb-6 font-light leading-relaxed" style={{ fontWeight: 300, lineHeight: '1.6' }}>
+                    <p className="text-sm text-slate-400 mb-6 font-light leading-relaxed" style={{ fontWeight: 300, lineHeight: '1.6' }}>
                       Take our consultation questionnaire to help us understand your specific needs.
                     </p>
                     <button
                       onClick={() => navigate('/questionnaire')}
-                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-8 py-4 rounded-2xl font-medium transition-all duration-500 inline-flex items-center group shadow-xl hover:shadow-2xl text-xl sm:text-2xl" 
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-6 py-3 rounded-2xl font-medium transition-all duration-500 inline-flex items-center group shadow-xl hover:shadow-2xl text-base sm:text-lg" 
                       style={{ fontWeight: 500 }}
                     >
                       Start Questionnaire
@@ -221,7 +221,7 @@ const ContactPage: React.FC = () => {
                 >
                   <motion.h2 
                     variants={fadeInUp}
-                    className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extralight text-white mb-10 sm:mb-12 tracking-tight" 
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-10 sm:mb-12 tracking-tight" 
                     style={{ fontWeight: 200, letterSpacing: '-0.01em' }}
                   >
                     Send us a <span className="text-emerald-300">Message</span>
@@ -245,7 +245,7 @@ const ContactPage: React.FC = () => {
 
                   <form ref={formRef} onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="mb-6">
-                      <label htmlFor="name" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
+                      <label htmlFor="name" className="block text-white font-light mb-3 text-base" style={{ fontWeight: 300 }}>
                         Full Name
                       </label>
                       <input
@@ -261,7 +261,7 @@ const ContactPage: React.FC = () => {
                     </div>
 
                     <div className="mb-6">
-                      <label htmlFor="email" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
+                      <label htmlFor="email" className="block text-white font-light mb-3 text-base" style={{ fontWeight: 300 }}>
                         Email Address
                       </label>
                       <input
@@ -278,7 +278,7 @@ const ContactPage: React.FC = () => {
                     </div>
 
                     <div className="mb-6">
-                      <label htmlFor="subject" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
+                      <label htmlFor="subject" className="block text-white font-light mb-3 text-base" style={{ fontWeight: 300 }}>
                         Subject
                       </label>
                       <input
@@ -294,7 +294,7 @@ const ContactPage: React.FC = () => {
                     </div>
 
                     <div className="mb-8">
-                      <label htmlFor="message" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
+                      <label htmlFor="message" className="block text-white font-light mb-3 text-base" style={{ fontWeight: 300 }}>
                         Message
                       </label>
                       <textarea
@@ -313,7 +313,7 @@ const ContactPage: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-2xl transition-all duration-500 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl text-xl sm:text-2xl" 
+                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-2xl transition-all duration-500 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl text-base sm:text-lg" 
                       style={{ fontWeight: 500 }}
                     >
                       {isSubmitting ? (

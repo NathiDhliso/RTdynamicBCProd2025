@@ -54,14 +54,14 @@ const ServicesPage: React.FC = () => {
             >
               <motion.h1 
                 variants={fadeInUp}
-                className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
                 style={{ fontWeight: 300, letterSpacing: '-0.02em' }}
               >
                 Our <span className="text-emerald-300 font-extralight" style={{ fontWeight: 200 }}>Services</span>
               </motion.h1>
               <motion.p 
                 variants={fadeInUp}
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-300 leading-relaxed max-w-5xl mx-auto font-light" 
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-300 leading-relaxed max-w-5xl mx-auto font-light" 
                 style={{ fontWeight: 300, lineHeight: '1.4' }}
               >
                 Comprehensive consulting solutions designed to address your most critical business challenges 
@@ -89,10 +89,10 @@ const ServicesPage: React.FC = () => {
                     className="backdrop-blur-xl bg-slate-800/15 p-10 sm:p-12 rounded-3xl border border-slate-700/25 hover:bg-slate-800/25 hover:border-slate-600/35 transition-all duration-700 cursor-pointer transform hover:-translate-y-3 hover:shadow-2xl group"
                   >
                     <div className="mb-8 group-hover:scale-110 transition-transform duration-500">{service.icon}</div>
-                    <h3 className="text-2xl sm:text-3xl font-light text-white mb-6 tracking-tight" style={{ fontWeight: 300 }}>
+                    <h3 className="text-xl sm:text-2xl font-light text-white mb-6 tracking-tight" style={{ fontWeight: 300 }}>
                       {service.title}
                     </h3>
-                    <p className="text-slate-400 mb-8 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.6' }}>
+                    <p className="text-base text-slate-400 mb-8 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.6' }}>
                       {service.description}
                     </p>
                     <ul className="space-y-3 mb-8">
@@ -129,10 +129,10 @@ const ServicesPage: React.FC = () => {
               className="max-w-6xl mx-auto"
             >
               <motion.div variants={fadeInUp} className="text-center mb-20 sm:mb-24">
-                <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-8 sm:mb-10 tracking-tight leading-tight" style={{ fontWeight: 200, letterSpacing: '-0.02em' }}>
                   Our <span className="text-emerald-300">Process</span>
                 </h2>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
+                <p className="text-lg sm:text-xl md:text-2xl text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.4' }}>
                   A proven methodology that ensures successful outcomes for every engagement.
                 </p>
               </motion.div>
@@ -151,10 +151,10 @@ const ServicesPage: React.FC = () => {
                     <div className="bg-emerald-500 text-slate-900 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 group-hover:scale-110 transition-transform duration-500" style={{ fontWeight: 700 }}>
                       {phase.step}
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-light text-white mb-4 tracking-tight" style={{ fontWeight: 300 }}>
+                    <h3 className="text-lg sm:text-xl font-light text-white mb-4 tracking-tight" style={{ fontWeight: 300 }}>
                       {phase.title}
                     </h3>
-                    <p className="text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.6' }}>
+                    <p className="text-sm text-slate-400 leading-relaxed font-light" style={{ fontWeight: 300, lineHeight: '1.6' }}>
                       {phase.description}
                     </p>
                   </motion.div>

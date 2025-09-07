@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { ArrowRight, TrendingUp, Users, Award, Shield, Target, Zap, Phone, Mail, MapPin } from 'lucide-react';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import Modal from '@/components/Modal';
 
 // Register GSAP plugins
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
@@ -20,6 +21,9 @@ const HomePage: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
 
   // Data arrays
   const stats = [
@@ -711,12 +715,7 @@ const HomePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               {/* About */}
               <div className="md:col-span-2 lg:col-span-1">
-                <Link to="/" className="inline-block mb-4">
-                  <img src="/Logo.png" alt="RT Dynamic Logo" className="h-12" />
-                </Link>
-                <p className="text-base font-light leading-relaxed">
-                  Driving financial clarity and strategic growth for businesses through expert chartered accounting and consulting services.
-                </p>
+                {/* Logo and description removed */}
               </div>
 
               {/* Quick Links */}
@@ -726,7 +725,7 @@ const HomePage: React.FC = () => {
                   <li><Link to="/about" className="hover:text-emerald-300 transition-colors">About Us</Link></li>
                   <li><Link to="/services" className="hover:text-emerald-300 transition-colors">Services</Link></li>
                   <li><Link to="/contact" className="hover:text-emerald-300 transition-colors">Contact</Link></li>
-                  <li><Link to="/faq" className="hover:text-emerald-300 transition-colors">FAQ</Link></li>
+                  <li><button onClick={() => setIsFaqModalOpen(true)} className="hover:text-emerald-300 transition-colors text-left">FAQ</button></li>
                 </ul>
               </div>
 
@@ -766,14 +765,60 @@ const HomePage: React.FC = () => {
                 &copy; {new Date().getFullYear()} RT Dynamic Business Consulting. All Rights Reserved.
               </p>
               <div className="flex space-x-4">
-                <Link to="/privacy-policy" className="text-sm hover:text-emerald-300 transition-colors">Privacy Policy</Link>
-                <Link to="/terms-of-service" className="text-sm hover:text-emerald-300 transition-colors">Terms of Service</Link>
+                <button onClick={() => setIsPrivacyModalOpen(true)} className="text-sm hover:text-emerald-300 transition-colors">Privacy Policy</button>
+                <button onClick={() => setIsTermsModalOpen(true)} className="text-sm hover:text-emerald-300 transition-colors">Terms of Service</button>
               </div>
             </div>
           </div>
         </footer>
 
       </div>
+
+      {/* Modals */}
+      <Modal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} title="Privacy Policy">
+        <div className="space-y-4 text-slate-300">
+          <p>Your privacy is important to us. This privacy policy explains how we collect, use, and protect your information.</p>
+          <h3 className="text-lg font-semibold text-white">Information We Collect</h3>
+          <p>We collect information you provide directly to us, such as when you contact us or use our services.</p>
+          <h3 className="text-lg font-semibold text-white">How We Use Your Information</h3>
+          <p>We use the information we collect to provide, maintain, and improve our services.</p>
+          <h3 className="text-lg font-semibold text-white">Information Sharing</h3>
+          <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent.</p>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isTermsModalOpen} onClose={() => setIsTermsModalOpen(false)} title="Terms of Service">
+        <div className="space-y-4 text-slate-300">
+          <p>By using our services, you agree to these terms. Please read them carefully.</p>
+          <h3 className="text-lg font-semibold text-white">Use of Services</h3>
+          <p>You may use our services only as permitted by law and these terms.</p>
+          <h3 className="text-lg font-semibold text-white">Limitations</h3>
+          <p>We provide our services "as is" and make no warranties about their reliability or availability.</p>
+          <h3 className="text-lg font-semibold text-white">Changes to Terms</h3>
+          <p>We may modify these terms at any time. Continued use of our services constitutes acceptance of the modified terms.</p>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isFaqModalOpen} onClose={() => setIsFaqModalOpen(false)} title="Frequently Asked Questions">
+        <div className="space-y-6 text-slate-300">
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">What services do you offer?</h3>
+            <p>We provide comprehensive chartered accounting, tax planning, business advisory, and compliance services.</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">How do I get started?</h3>
+            <p>You can begin by filling out our questionnaire or contacting us directly for a free consultation.</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">What are your fees?</h3>
+            <p>Our fees vary based on the scope and complexity of services required. We provide transparent pricing after understanding your needs.</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">Are you registered with SAICA?</h3>
+            <p>Yes, we are registered chartered accountants with SAICA and comply with all professional standards.</p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
