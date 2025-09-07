@@ -62,7 +62,7 @@ const Header: React.FC = () => {
   }, [prefersReducedMotion]);
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/30 shadow-lg">
+    <header className="sticky top-0 z-50 transition-all duration-300 bg-slate-800/70 backdrop-blur-md border-b border-slate-600/30 shadow-lg">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}

@@ -632,10 +632,10 @@ const HomePage: React.FC = () => {
         </video>
       </div>
 
-      {/* Gradient Overlays */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/85 via-slate-900/80 to-slate-950/85 pointer-events-none -z-[1]"></div>
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-900/15 via-transparent to-transparent pointer-events-none -z-[1]"></div>
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-slate-800/20 via-transparent to-transparent pointer-events-none -z-[1]"></div>
+      {/* Gradient Overlays - Brightened for better video visibility */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900/60 via-slate-800/50 to-slate-900/60 pointer-events-none -z-[1]"></div>
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-800/20 via-transparent to-transparent pointer-events-none -z-[1]"></div>
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-slate-700/25 via-transparent to-transparent pointer-events-none -z-[1]"></div>
       
       <div ref={smoothScrollRef} className="relative z-10 min-h-screen">
         {/* Hero Section with Enhanced Parallax */}
@@ -770,7 +770,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Footer */}
-        <footer className="bg-slate-950/50 border-t border-slate-800/50 text-slate-400 pt-20 pb-10" style={{paddingTop: '5rem', paddingBottom: '2.5rem'}}>
+        <footer className="bg-slate-900/40 border-t border-slate-700/40 text-slate-300 pt-20 pb-10" style={{paddingTop: '5rem', paddingBottom: '2.5rem'}}>
           <div className="container mx-auto px-8 sm:px-10 lg:px-16 xl:px-20">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               {/* About */}

@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
           />
           
           {/* Modal */}
@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="bg-slate-800 border border-slate-600/50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
                 <h2 className="text-2xl font-light text-white" style={{ fontWeight: 300 }}>

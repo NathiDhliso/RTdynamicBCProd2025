@@ -127,7 +127,7 @@ section:not(footer) {
   }
 }
 
-/* CSS Vignette Overlay for professional effect */
+/* CSS Vignette Overlay for professional effect - Brightened for better video visibility */
 body::after {
   content: '';
   position: fixed;
@@ -138,8 +138,8 @@ body::after {
   z-index: 1;
   pointer-events: none; /* Allows clicks to go through the overlay */
   background: radial-gradient(ellipse at center,
-    rgba(0,0,0,0) 50%,
-    rgba(0,0,0,0.65) 100%
+    rgba(0,0,0,0) 60%,
+    rgba(0,0,0,0.35) 100%
   );
 }
 
