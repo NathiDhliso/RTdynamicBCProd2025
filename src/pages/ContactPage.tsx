@@ -14,6 +14,7 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 const ContactPage: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const formRef = useRef<HTMLFormElement>(null);
   const errorShakeRef = useRef<HTMLDivElement>(null);
@@ -40,7 +41,7 @@ const ContactPage: React.FC = () => {
   }, [errors, prefersReducedMotion]);
 
   const onSubmit = async (data: ContactFormData) => {
-    setIsSubmitting(true);
+    setIsSubmittingForm(true);
     
     try {
       const response = await fetch('http://localhost:3001/api/contact', {
@@ -81,7 +82,7 @@ const ContactPage: React.FC = () => {
       // You could add error state here if needed
       alert('Failed to send message. Please try again or contact us directly.');
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingForm(false);
     }
   };
 
@@ -312,11 +313,11 @@ const ContactPage: React.FC = () => {
 
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmittingForm || isSubmitting}
                       className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-4 px-6 rounded-2xl transition-all duration-500 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl text-base sm:text-lg" 
                       style={{ fontWeight: 500 }}
                     >
-                      {isSubmitting ? (
+                      {(isSubmittingForm || isSubmitting) ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" strokeWidth={1.5} />
                           Sending Message...

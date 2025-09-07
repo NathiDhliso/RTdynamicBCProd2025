@@ -615,15 +615,18 @@ const HomePage: React.FC = () => {
       <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
         <video
           ref={videoRef}
-          src="/Bar_Graph_Logo_Animation_Video.mp4"
           playsInline
           muted
+          preload="metadata"
           className="absolute top-0 left-0 w-full h-full object-cover opacity-90 scale-110"
           style={{ 
             transformOrigin: 'center center',
             willChange: 'transform, filter'
           }}
-        />
+        >
+          <source src="/Bar_Graph_Logo_Animation_Video.webm" type="video/webm" />
+          <source src="/Bar_Graph_Logo_Animation_Video_optimized.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Gradient Overlays */}
