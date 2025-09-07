@@ -48,10 +48,10 @@ const useDeviceDetection = () => {
 const FounderCard = ({
   name,
   title,
-  bio,
+  bio: _bio,
   expertise,
   experience,
-  education,
+  education: _education,
   achievements,
   image,
   linkedin,
