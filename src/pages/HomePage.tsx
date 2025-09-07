@@ -139,10 +139,9 @@ const HomePage: React.FC = () => {
       video.currentTime = 0;
       
       // Variables to track scroll state
-      let lastScrollProgress = 0;
-      let animationFrame = null;
+      let _lastScrollProgress = 0;
+      let animationFrame: number | null = null;
       let targetTime = 0;
-      let currentVideoTime = 0;
       
       video.addEventListener('loadedmetadata', () => {
         const videoDuration = video.duration;
@@ -165,7 +164,7 @@ const HomePage: React.FC = () => {
             // Method 2: Velocity-based playback (uncomment to use)
             /*
             const speedMultiplier = gsap.utils.clamp(0.5, 3, velocity);
-            const deltaProgress = scrollProgress - lastScrollProgress;
+            const deltaProgress = scrollProgress - _lastScrollProgress;
             targetTime = video.currentTime + (deltaProgress * videoDuration * speedMultiplier);
             targetTime = gsap.utils.clamp(0, videoDuration, targetTime);
             */
@@ -185,7 +184,7 @@ const HomePage: React.FC = () => {
             };
             
             updateVideoTime();
-            lastScrollProgress = scrollProgress;
+            _lastScrollProgress = scrollProgress;
             
             // Optional: Add visual feedback for scroll direction
             if (scrollDirection === 1) {

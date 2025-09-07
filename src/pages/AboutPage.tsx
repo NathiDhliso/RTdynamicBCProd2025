@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Users, Globe, TrendingUp, Mail, Briefcase, GraduationCap, Trophy, Sparkles, Target, Rocket, Shield } from 'lucide-react';
+import { Award, Users, Globe, TrendingUp, Sparkles, Target, Rocket, Shield } from 'lucide-react';
 
 // Animation variants
 const fadeInUp = {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, Twitter, Mail, Award, GraduationCap, Briefcase, BookOpen, Trophy } from 'lucide-react';
+import { Linkedin, Twitter, Mail, Award, GraduationCap, Trophy } from 'lucide-react';
 
 // Custom hook for reduced motion preference
 const usePrefersReducedMotion = () => {
@@ -38,10 +38,10 @@ interface FounderCardProps {
 const FounderCard: React.FC<FounderCardProps> = ({
   name,
   title,
-  bio,
+  _bio,
   expertise,
   experience,
-  education,
+  _education,
   achievements,
   image,
   linkedin,
@@ -49,7 +49,7 @@ const FounderCard: React.FC<FounderCardProps> = ({
   email,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const _prefersReducedMotion = usePrefersReducedMotion();
 
   const handleFlip = (e: React.MouseEvent) => {
     // Don't flip if clicking on scrollable content or interactive elements
