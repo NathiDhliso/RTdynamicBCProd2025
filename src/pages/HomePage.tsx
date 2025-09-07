@@ -131,33 +131,93 @@ const HomePage: React.FC = () => {
     // Refresh ScrollTrigger on resize
     ScrollTrigger.refresh();
 
-    // --- CINEMATIC VIDEO PLAYBACK ON SCROLL ---
+    // --- ENHANCED CINEMATIC VIDEO PLAYBACK ON SCROLL ---
     const video = videoRef.current;
     if (video && !prefersReducedMotion) {
-      // Start playing the video at a very slow rate
-      video.play();
-      video.playbackRate = 0.2;
-
-      // Create a GSAP timeline to control the playback rate
-      const _tl = gsap.timeline({
-        defaults: { duration: 1, ease: 'power2.inOut' },
-        scrollTrigger: {
+      // Initialize video
+      video.pause();
+      video.currentTime = 0;
+      
+      // Variables to track scroll state
+      let lastScrollProgress = 0;
+      let animationFrame = null;
+      let targetTime = 0;
+      let currentVideoTime = 0;
+      
+      video.addEventListener('loadedmetadata', () => {
+        const videoDuration = video.duration;
+        
+        // Create ScrollTrigger for video control
+        ScrollTrigger.create({
           trigger: mainRef.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: () => `+=${document.documentElement.scrollHeight - window.innerHeight}`,
           scrub: true,
           onUpdate: (self) => {
-            // Get the scroll velocity (how fast the user is scrolling)
-            const velocity = Math.abs(self.getVelocity() / 1000); // Normalize the velocity
-            // Animate the playbackRate, clamping it between 0.2 and a max of 4
-            gsap.to(video, {
-              playbackRate: gsap.utils.clamp(0.2, 4, velocity),
-              duration: 0.5, // Smoothly transition between playback rates
-              ease: 'power1.out',
-            });
+            // Calculate scroll direction and velocity
+            const scrollDirection = self.direction; // 1 for down, -1 for up
+            const velocity = Math.abs(self.getVelocity()) / 1000; // Normalized velocity
+            const scrollProgress = self.progress;
+            
+            // Method 1: Direct time mapping (smooth scrubbing)
+            targetTime = scrollProgress * videoDuration;
+            
+            // Method 2: Velocity-based playback (uncomment to use)
+            /*
+            const speedMultiplier = gsap.utils.clamp(0.5, 3, velocity);
+            const deltaProgress = scrollProgress - lastScrollProgress;
+            targetTime = video.currentTime + (deltaProgress * videoDuration * speedMultiplier);
+            targetTime = gsap.utils.clamp(0, videoDuration, targetTime);
+            */
+            
+            // Smooth video time update
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            
+            const updateVideoTime = () => {
+              const diff = targetTime - video.currentTime;
+              
+              // Only update if difference is significant
+              if (Math.abs(diff) > 0.01) {
+                // Smooth interpolation
+                video.currentTime += diff * 0.1;
+                animationFrame = requestAnimationFrame(updateVideoTime);
+              }
+            };
+            
+            updateVideoTime();
+            lastScrollProgress = scrollProgress;
+            
+            // Optional: Add visual feedback for scroll direction
+            if (scrollDirection === 1) {
+              // Scrolling down
+              video.style.filter = `brightness(${1 - (scrollProgress * 0.5)}) contrast(${1 + (scrollProgress * 0.1)})`;
+            } else {
+              // Scrolling up
+              video.style.filter = `brightness(${1 - (scrollProgress * 0.5)}) contrast(${1 + (scrollProgress * 0.1)}) hue-rotate(${velocity * 5}deg)`;
+            }
           },
-        },
+          onScrubComplete: () => {
+            // Clean up animation frame when scrolling stops
+            if (animationFrame) {
+              cancelAnimationFrame(animationFrame);
+            }
+          }
+        });
+        
+        // Optional: Add keyboard controls for fine-tuning
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') {
+            video.currentTime = Math.min(video.currentTime + 0.1, videoDuration);
+          } else if (e.key === 'ArrowLeft') {
+            video.currentTime = Math.max(video.currentTime - 0.1, 0);
+          }
+        });
       });
+      
+      // Clean up on unmount
+      return () => {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+      };
 
       // Video zoom and brightness effect (replaces the blur)
       gsap.to(video, {

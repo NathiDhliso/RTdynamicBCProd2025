@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
-import { Menu, X, Building2 } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
@@ -66,8 +66,13 @@ const Header: React.FC = () => {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link ref={logoRef} to="/" className="flex items-center space-x-2">
-            <Building2 className="h-8 w-8 text-emerald-300" strokeWidth={1.5} />
+          <Link ref={logoRef} to="/" className="flex items-center space-x-3">
+            <img 
+              src={`/Logo.png?v=${Date.now()}`}
+              alt="RT Dynamic Business Consulting Logo" 
+              className="h-10 w-10 object-contain" 
+              style={{ filter: 'drop-shadow(0 1px 2px rgba(16, 185, 129, 0.2))' }}
+            />
             <span className="text-2xl font-light text-white" style={{ fontWeight: 300 }}>
               RT Dynamic Business Consulting
             </span>
