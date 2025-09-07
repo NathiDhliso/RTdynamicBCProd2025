@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
     const emailTemplate = createQuestionnaireEmailTemplate(formData);
     
     // Send email to business
-    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.com';
+    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
     await sendEmail(recipientEmail, emailTemplate);
 
     // Send confirmation email to customer (optional)

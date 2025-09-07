@@ -40,8 +40,8 @@ npm install
    AWS_SECRET_ACCESS_KEY=your_actual_secret_key
    
    # Email Configuration
-   FROM_EMAIL=contact@rtdynamicbc.com
-   BUSINESS_EMAIL=contact@rtdynamicbc.com
+   FROM_EMAIL=contact@rtdynamicbc.co.za
+BUSINESS_EMAIL=contact@rtdynamicbc.co.za
    SEND_CONFIRMATION=true
    ```
 
@@ -49,19 +49,19 @@ npm install
 
 #### Prerequisites:
 - AWS Account with SES access
-- Domain verification for `rtdynamicbc.com`
-- Email address verification for `contact@rtdynamicbc.com`
+- Domain verification for `rtdynamicbc.co.za`
+- Email address verification for `contact@rtdynamicbc.co.za`
 
 #### Steps:
 
 1. **Verify Domain in AWS SES:**
    - Go to AWS SES Console
    - Navigate to "Verified identities"
-   - Add domain: `rtdynamicbc.com`
+   - Add domain: `rtdynamicbc.co.za`
    - Follow DNS verification steps
 
 2. **Verify Email Address:**
-   - Add email identity: `contact@rtdynamicbc.com`
+   - Add email identity: `contact@rtdynamicbc.co.za`
    - Check email and click verification link
 
 3. **Request Production Access:**

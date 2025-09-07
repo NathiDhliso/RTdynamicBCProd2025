@@ -71,8 +71,8 @@ For production with stricter security, use this minimal policy:
         "ses:SendEmail"
       ],
       "Resource": [
-        "arn:aws:ses:us-east-1:YOUR_ACCOUNT_ID:identity/rtdynamicbc.com",
-        "arn:aws:ses:us-east-1:YOUR_ACCOUNT_ID:identity/contact@rtdynamicbc.com"
+        "arn:aws:ses:us-east-1:YOUR_ACCOUNT_ID:identity/rtdynamicbc.co.za",
+                "arn:aws:ses:us-east-1:YOUR_ACCOUNT_ID:identity/contact@rtdynamicbc.co.za"
       ]
     }
   ]
@@ -86,11 +86,11 @@ For production with stricter security, use this minimal policy:
 ### 6. SES Setup Checklist
 
 ✅ **Domain Verification:**
-- Verify `rtdynamicbc.com` in SES Console
+- Verify `rtdynamicbc.co.za` in SES Console
 - Add required DNS records (TXT, CNAME, MX)
 
 ✅ **Email Verification:**
-- Verify `contact@rtdynamicbc.com`
+- Verify `contact@rtdynamicbc.co.za`
 - Check email and click verification link
 
 ✅ **Production Access:**
@@ -103,8 +103,8 @@ For production with stricter security, use this minimal policy:
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
-FROM_EMAIL=contact@rtdynamicbc.com
-BUSINESS_EMAIL=contact@rtdynamicbc.com
+FROM_EMAIL=contact@rtdynamicbc.co.za
+BUSINESS_EMAIL=contact@rtdynamicbc.co.za
 ```
 
 ### 7. Testing SES Setup
@@ -112,8 +112,8 @@ BUSINESS_EMAIL=contact@rtdynamicbc.com
 ```bash
 # Test from AWS CLI (optional)
 aws ses send-email \
-  --source contact@rtdynamicbc.com \
-  --destination ToAddresses=contact@rtdynamicbc.com \
+  --source contact@rtdynamicbc.co.za \
+--destination ToAddresses=contact@rtdynamicbc.co.za \
   --message Subject={Data="Test Email"},Body={Text={Data="Test message"}}
 ```
 
