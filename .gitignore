@@ -37,7 +37,12 @@ build/Release
 
 # Dependency directories
 node_modules/
+**/node_modules/
 jspm_packages/
+# Yarn
+.yarn/
+.pnp.*
+yarn-error.log
 
 # TypeScript v1 declaration files
 typings/
@@ -151,6 +156,35 @@ aws-credentials.json
 *.crt
 *.p12
 *.pfx
+
+# Additional secrets and credentials
+.secrets
+secrets.json
+credentials.json
+api-keys.json
+*.secret
+*.credentials
+.env.secrets
+.env.production
+.env.staging
+.env.development
+.env.test
+
+# GitHub and Git secrets
+.github-token
+.git-credentials
+
+# Cloud provider credentials
+.gcp/
+.azure/
+service-account.json
+gcloud-service-key.json
+
+# API keys and tokens
+api_keys.txt
+tokens.txt
+*.token
+*.apikey
 
 # Database
 *.db

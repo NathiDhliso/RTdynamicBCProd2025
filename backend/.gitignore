@@ -7,9 +7,13 @@
 
 # Dependencies
 node_modules/
+**/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.yarn/
+.pnp.*
+jspm_packages/
 
 # Runtime data
 pids
@@ -35,6 +39,29 @@ coverage/
 # AWS credentials and config
 .aws/
 aws-credentials.json
+
+# Additional secrets and credentials
+.secrets
+secrets.json
+credentials.json
+api-keys.json
+*.secret
+*.credentials
+.env.secrets
+.env.development
+.env.test
+
+# API keys and tokens
+api_keys.txt
+tokens.txt
+*.token
+*.apikey
+
+# Cloud provider credentials
+.gcp/
+.azure/
+service-account.json
+gcloud-service-key.json
 
 # SSL certificates and keys
 *.pem
