@@ -33,7 +33,7 @@ const initialFormData: Partial<BusinessHealthCheckData> = {
 
 export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
   step: 1,
-  totalSteps: 4,
+  totalSteps: 4, // Updated total steps
   formData: initialFormData,
   
   nextStep: () => set((state) => {
@@ -41,7 +41,7 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
     let nextStep = state.step + 1;
     
     // Skip step 3 (compliance) if not Pty Ltd
-    if (nextStep === 3 && !shouldShowComplianceStep()) {
+    if (state.step === 2 && !shouldShowComplianceStep()) {
       nextStep = 4;
     }
     
@@ -53,7 +53,7 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
     let prevStep = state.step - 1;
     
     // Skip step 3 (compliance) if not Pty Ltd when going backwards
-    if (prevStep === 3 && !shouldShowComplianceStep()) {
+    if (state.step === 4 && !shouldShowComplianceStep()) {
       prevStep = 2;
     }
     

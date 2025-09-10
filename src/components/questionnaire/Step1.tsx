@@ -92,7 +92,11 @@ const Step1: React.FC = () => {
           </label>
           <select
             id="entityType"
-            {...register('entityType')}
+            {...register('entityType', {
+              onChange: (e) => {
+                updateFormData({ entityType: e.target.value });
+              }
+            })}
             className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white font-light" style={{ fontWeight: 300 }}
           >
             <option value="">Select your entity type</option>

@@ -8,6 +8,7 @@ import { Send, Loader2, CheckCircle, ArrowLeft, Target } from 'lucide-react';
 import { z } from 'zod';
 import { useQuestionnaireStore } from '@/store/questionnaireStore';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { calculateQuote } from '@/hooks/useQuote';
 
 const step4Schema = z.object({
   primaryGoal: z.string().min(1, 'Primary goal is required'),
@@ -48,7 +49,16 @@ const Step4: React.FC = () => {
     try {
       // Get the complete form data
       const completeData = { ...formData, ...data };
-      console.log('📊 Submitting Business Health Check:', completeData);
+      
+      // Calculate the quote to be sent internally
+      const quoteDetails = calculateQuote(completeData);
+
+      const payload = {
+        ...completeData,
+        quoteDetails, // Add the calculated quote to the payload
+      };
+
+      console.log('📊 Submitting Business Health Check with Quote:', payload);
       
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
       const response = await fetch(`${API_BASE_URL}/api/questionnaire`, {
@@ -56,7 +66,7 @@ const Step4: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(completeData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -68,16 +78,13 @@ const Step4: React.FC = () => {
       console.log('✅ Questionnaire submitted successfully:', result);
       setIsSubmitted(true);
       
-      // Reset form after 5 seconds
+      // Reset form after a delay to allow user to read the message
       setTimeout(() => {
         reset();
-        setIsSubmitted(false);
-      }, 5000);
+      }, 8000);
 
     } catch (error) {
       console.error('❌ Error submitting questionnaire:', error);
-      
-      // You could add error state here if needed
       alert('Failed to submit questionnaire. Please try again or contact us directly.');
     } finally {
       setIsSubmitting(false);
@@ -87,23 +94,10 @@ const Step4: React.FC = () => {
   // GSAP success animation
   useEffect(() => {
     if (isSubmitted && !prefersReducedMotion && successIconRef.current) {
-      const tl = gsap.timeline();
-      
-      gsap.set(successIconRef.current, { scale: 0, rotation: -180 });
-      
-      tl.to(successIconRef.current, {
-        scale: 1,
-        rotation: 0,
-        duration: 0.8,
-        ease: 'back.out(1.7)'
-      })
-      .to(successIconRef.current, {
-        scale: 1.1,
-        duration: 0.2,
-        ease: 'power2.out',
-        yoyo: true,
-        repeat: 1
-      });
+      gsap.fromTo(successIconRef.current, 
+        { scale: 0, opacity: 0, rotation: -180 },
+        { scale: 1, opacity: 1, rotation: 0, duration: 0.8, ease: 'back.out(1.7)' }
+      );
     }
   }, [isSubmitted, prefersReducedMotion]);
 
@@ -120,19 +114,19 @@ const Step4: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="p-8 text-center flex flex-col items-center justify-center min-h-[500px]"
+        className="p-8 text-center flex flex-col items-center justify-center min-h-[600px]"
       >
         <div ref={successIconRef}>
-          <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+          <CheckCircle className="h-16 w-16 text-emerald-400 mb-6" />
         </div>
-        <h2 className="text-3xl font-serif font-bold text-primary mb-4">
-          Thank You!
+        <h2 className="text-3xl font-extralight text-white mb-4">
+          Thank You, {formData.contactName}!
         </h2>
-        <p className="text-text-secondary mb-4 max-w-md">
-          Your Business Health Check has been submitted successfully. We'll analyze your responses and provide customized recommendations.
+        <p className="text-slate-400 mb-4 max-w-md mx-auto leading-relaxed">
+          Your Business Health Check has been submitted. We're analyzing your responses to prepare your customized recommendations.
         </p>
-        <p className="text-sm text-text-secondary">
-          We'll contact you within 24 hours with your personalized business assessment and consultation options.
+        <p className="text-sm text-slate-500">
+          We will contact you at <span className="font-medium text-slate-400">{formData.email}</span> within 24 hours to discuss the next steps.
         </p>
       </motion.div>
     );
@@ -144,10 +138,10 @@ const Step4: React.FC = () => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="p-8"
+      className="p-10 sm:p-12"
     >
-      <div className="mb-8">
-        <div className="flex items-center mb-4">
+      <div className="mb-10">
+        <div className="flex items-center mb-6">
           <Target className="h-8 w-8 text-emerald-300 mr-3" strokeWidth={1.5} />
           <h2 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight" style={{ fontWeight: 200 }}>
             Goals & <span className="text-emerald-300">Contact</span>
@@ -159,6 +153,7 @@ const Step4: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* ... form fields remain the same ... */}
         <div>
           <label className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
             Primary Goal *
@@ -190,7 +185,7 @@ const Step4: React.FC = () => {
             {...register('businessChallenges')}
             rows={5}
             className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white placeholder-slate-400 font-light resize-vertical" style={{ fontWeight: 300 }}
-            placeholder="Please describe your current business challenges, pain points, and areas where you need support. The more detail you provide, the better we can tailor our recommendations to your specific needs..."
+            placeholder="Please describe your current business challenges, pain points, and areas where you need support..."
           />
           {errors.businessChallenges && (
             <p className="text-red-500 text-sm mt-1">{errors.businessChallenges.message}</p>
@@ -243,23 +238,6 @@ const Step4: React.FC = () => {
           {errors.email && (
             <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
           )}
-        </div>
-
-        {/* Summary */}
-        <div className="backdrop-blur-xl bg-slate-800/20 border border-slate-700/30 p-6 rounded-xl">
-          <h3 className="text-lg font-light text-white mb-4" style={{ fontWeight: 300 }}>Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
-            <div>
-              <p><span className="font-medium">Company:</span> {formData.companyName || 'Not specified'}</p>
-              <p><span className="font-medium">Entity Type:</span> {formData.entityType || 'Not specified'}</p>
-              <p><span className="font-medium">Industry:</span> {formData.industry || 'Not specified'}</p>
-            </div>
-            <div>
-              <p><span className="font-medium">Revenue:</span> {formData.annualRevenue || 'Not specified'}</p>
-              <p><span className="font-medium">Employees:</span> {formData.hasEmployees || 'Not specified'}</p>
-              <p><span className="font-medium">Stock:</span> {formData.managesStock || 'Not specified'}</p>
-            </div>
-          </div>
         </div>
 
         <div className="pt-4 flex gap-4">

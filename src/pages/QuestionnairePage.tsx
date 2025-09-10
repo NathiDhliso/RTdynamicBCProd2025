@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useQuestionnaireStore } from '@/store/questionnaireStore';
@@ -9,33 +9,36 @@ import Step3 from '@/components/questionnaire/Step3';
 import Step4 from '@/components/questionnaire/Step4';
 
 const QuestionnairePage: React.FC = () => {
-  const { step, totalSteps: _totalSteps, prevStep, shouldShowComplianceStep } = useQuestionnaireStore();
+  const { step, prevStep, shouldShowComplianceStep, formData } = useQuestionnaireStore();
+
+  const totalSteps = shouldShowComplianceStep() ? 4 : 3;
 
   // Calculate actual progress considering conditional step 3
-  const getProgress = () => {
+  const progress = useMemo(() => {
     const showCompliance = shouldShowComplianceStep();
     const actualTotalSteps = showCompliance ? 4 : 3;
+    let currentStep = step;
     
     if (!showCompliance && step > 2) {
-      // If step 3 is skipped and we're on step 4, show as step 3 of 3
-      return ((step - 1) / actualTotalSteps) * 100;
+      // If step 3 is skipped and we're on step 4, count it as step 3
+      currentStep = step - 1;
     }
     
-    return (step / actualTotalSteps) * 100;
-  };
+    // We subtract 1 from currentStep because we want progress to be 100% at the START of the final step's submission
+    return ((currentStep - 1) / actualTotalSteps) * 100;
+  }, [step, formData.entityType, shouldShowComplianceStep]);
 
-  const getStepDisplay = () => {
+  const stepDisplay = useMemo(() => {
     const showCompliance = shouldShowComplianceStep();
     const actualTotalSteps = showCompliance ? 4 : 3;
+    let currentStep = step;
     
     if (!showCompliance && step > 2) {
-      return `Step ${step - 1} of ${actualTotalSteps}`;
+      currentStep = step - 1;
     }
     
-    return `Step ${step} of ${actualTotalSteps}`;
-  };
-
-  const progress = getProgress();
+    return `Step ${currentStep} of ${actualTotalSteps}`;
+  }, [step, formData.entityType, shouldShowComplianceStep]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden py-20" style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif' }}>
@@ -65,7 +68,7 @@ const QuestionnairePage: React.FC = () => {
             {/* Progress Bar */}
             <motion.div variants={fadeInUp} className="mb-10">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-slate-300 font-light" style={{ fontWeight: 300 }}>{getStepDisplay()}</span>
+                <span className="text-sm text-slate-300 font-light" style={{ fontWeight: 300 }}>{stepDisplay}</span>
                 <span className="text-sm text-emerald-300 font-medium" style={{ fontWeight: 500 }}>{Math.round(progress)}% Complete</span>
               </div>
               <div className="w-full backdrop-blur-xl bg-slate-800/30 rounded-full h-3 border border-slate-700/40">
