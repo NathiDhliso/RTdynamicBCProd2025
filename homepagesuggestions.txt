@@ -338,7 +338,7 @@ const HomePage = () => {
                 <span className="block text-emerald-300 font-extralight mt-3">& Strategic Business Advisors</span>
               </h1>
               <p className="hero-subtitle text-base sm:text-lg lg:text-xl mb-10 text-slate-300 leading-relaxed max-w-4xl mx-auto font-light">
-                Unlock your business potential with proven expertise across banking, telecommunications, and mining. We deliver bespoke financial solutions that drive growth and ensure compliance—working as your trusted strategic partner.
+                Unlock your business potential with proven expertise across banking, telecommunications, and mining. We deliver bespoke financial solutions that drive growth and ensure compliance working as your trusted strategic partner.
               </p>
               <div className="flex flex-col sm:flex-row gap-5 justify-center max-w-2xl mx-auto">
                 <Link to="/questionnaire" className="hero-button bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-10 py-5 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center group text-base shadow-xl hover:shadow-2xl transform hover:scale-105">
