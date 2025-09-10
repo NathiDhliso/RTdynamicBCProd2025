@@ -143,6 +143,25 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /api/contact - Handle GET requests to contact endpoint
+router.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Contact API endpoint is available',
+    methods: ['POST', 'OPTIONS'],
+    description: 'Use POST method to submit contact form data',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// OPTIONS /api/contact - Handle preflight requests
+router.options('/', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(200).end();
+});
+
 // GET /api/contact/health - Health check for contact service
 router.get('/health', (req, res) => {
   res.status(200).json({

@@ -7,6 +7,7 @@ import AboutPage from '@/pages/AboutPage';
 import ServicesPage from '@/pages/ServicesPage';
 import ContactPage from '@/pages/ContactPage';
 import QuestionnairePage from '@/pages/QuestionnairePage';
+import DebugPanel from '@/components/DebugPanel';
 import { pageTransition } from '@/lib/animations';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             </motion.div>
           } />
         </Routes>
+        <DebugPanel />
       </div>
     </Router>
   );

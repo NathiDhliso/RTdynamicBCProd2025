@@ -45,13 +45,21 @@ const ContactPage: React.FC = () => {
     
     try {
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      
+      // Create AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       const result = await response.json();
 
@@ -80,8 +88,18 @@ const ContactPage: React.FC = () => {
         });
       }
       
-      // You could add error state here if needed
-      alert('Failed to send message. Please try again or contact us directly.');
+      // Provide specific error messages based on error type
+      let errorMessage = 'Failed to send message. Please try again or contact us directly.';
+      
+      if (error.name === 'AbortError') {
+        errorMessage = 'Request timed out. Please check your internet connection and try again.';
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_TIMED_OUT')) {
+        errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
+      } else if (error.message.includes('CORS')) {
+        errorMessage = 'There was a configuration issue. Please try again in a few moments.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmittingForm(false);
     }

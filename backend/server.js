@@ -16,8 +16,28 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 
 // CORS configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:5173',
+  'https://www.rtdynamicbc.co.za',
+  'https://rtdynamicbc.co.za',
+  'https://d2js6qnot116a8.cloudfront.net',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175'
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -40,6 +60,24 @@ app.get('/health', (req, res) => {
     message: 'RT Dynamic Backend API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Environment debug endpoint (for troubleshooting)
+app.get('/debug/env', (req, res) => {
+  const envInfo = {
+    nodeEnv: process.env.NODE_ENV,
+    port: process.env.PORT || 3001,
+    frontendUrl: process.env.FRONTEND_URL || 'Not set',
+    awsRegion: process.env.AWS_REGION || 'Not set',
+    fromEmail: process.env.FROM_EMAIL || 'Not set',
+    businessEmail: process.env.BUSINESS_EMAIL || 'Not set',
+    sendConfirmation: process.env.SEND_CONFIRMATION || 'Not set',
+    hasAwsAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+    hasAwsSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY,
+    timestamp: new Date().toISOString()
+  };
+  
+  res.status(200).json(envInfo);
 });
 
 // API routes
