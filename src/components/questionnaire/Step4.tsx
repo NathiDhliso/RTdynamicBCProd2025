@@ -50,7 +50,8 @@ const Step4: React.FC = () => {
       const completeData = { ...formData, ...data };
       console.log('📊 Submitting Business Health Check:', completeData);
       
-      const response = await fetch('http://localhost:3001/api/questionnaire', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_BASE_URL}/api/questionnaire`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
