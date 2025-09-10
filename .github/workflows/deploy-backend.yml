@@ -30,7 +30,15 @@ jobs:
     - name: Create deployment package
       run: |
         cd backend
-        zip -r ../backend-deploy.zip . -x "node_modules/*" "*.git*" "*.env*" "README.md" "backend.zip"
+        # Create a clean deployment package with only essential files
+        zip -r ../backend-deploy.zip \
+          package.json \
+          package-lock.json \
+          server.js \
+          routes/ \
+          services/ \
+          Procfile \
+          -x "*.git*" "*.env*" "node_modules/*"
 
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v22
