@@ -45,8 +45,8 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
       nextStep = 4;
     }
     
-    return { step: Math.min(nextStep, 4) };
-  }),
+    return { step: Math.min(nextStep, state.totalSteps) };
+  })
   
   prevStep: () => set((state) => {
     const { shouldShowComplianceStep } = get();
