@@ -182,7 +182,7 @@ const AboutPage = () => {
               
               <motion.h1 
                 variants={fadeInUp}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight mb-8 sm:mb-10 leading-[0.9]" 
                 style={{ fontWeight: 300, letterSpacing: '-0.02em' }}
               >
                 Meet the Experts{' '}
