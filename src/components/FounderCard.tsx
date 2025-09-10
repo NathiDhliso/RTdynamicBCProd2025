@@ -60,8 +60,29 @@ const FounderCard = ({
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [touchStartTime, setTouchStartTime] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const { isMobile, isTouch, isLowPower } = useDeviceDetection();
+
+  // Scroll detection to prevent flip during scrolling
+  useEffect(() => {
+    let scrollTimeout;
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
 
   const handleInteraction = (e) => {
     // Prevent flip on link clicks
@@ -73,28 +94,50 @@ const FounderCard = ({
     setIsFlipped(!isFlipped);
   };
 
-  // Enhanced mobile compatibility check
+  // Enhanced mobile compatibility check - allow flip on mobile but simplify animations if needed
   const shouldSimplifyAnimations = prefersReducedMotion || isLowPower || 
     (isMobile && (!CSS.supports('transform-style', 'preserve-3d') || 
-     !CSS.supports('backface-visibility', 'hidden') || 
-     /iPhone|iPad|iPod|Android.*Mobile/i.test(navigator.userAgent)));
+     !CSS.supports('backface-visibility', 'hidden')));
+  
+  // Enable flip on mobile even with simplified animations
+  const enableFlip = !prefersReducedMotion && !isLowPower;
 
-  // Touch-specific handling for mobile devices
+  // Enhanced touch handling for mobile flip functionality
   const handleTouchStart = (e) => {
-    if (shouldSimplifyAnimations) {
-      handleInteraction(e);
-    }
+    if (isScrolling) return;
+    
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+    setTouchStartTime(Date.now());
   };
 
   const handleTouchEnd = (e) => {
-    e.preventDefault(); // Prevent ghost clicks
+    if (isScrolling) return;
+    
+    const touch = e.changedTouches[0];
+    const touchEndY = touch.clientY;
+    const touchDuration = Date.now() - touchStartTime;
+    const touchDistance = Math.abs(touchEndY - touchStartY);
+    
+    // Only flip if it's a tap (short duration, minimal movement)
+    const isTap = touchDuration < 300 && touchDistance < 10;
+    
+    if (isTap && !e.target.closest('a') && !e.target.closest('button')) {
+      e.preventDefault();
+      setIsFlipped(!isFlipped);
+    }
+  };
+
+  const handleClick = (e) => {
+    if (isScrolling || isTouch) return;
+    handleInteraction(e);
   };
 
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div 
         className={`founder-card-container h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative ${
-          !shouldSimplifyAnimations ? 'cursor-pointer' : ''
+          enableFlip ? 'cursor-pointer' : ''
         } ${
           shouldSimplifyAnimations ? 'mobile-fallback' : 'mobile-optimized'
         }`}
@@ -102,14 +145,28 @@ const FounderCard = ({
           perspective: shouldSimplifyAnimations ? 'none' : '1500px',
           WebkitPerspective: shouldSimplifyAnimations ? 'none' : '1500px'
         }}
-        onClick={!shouldSimplifyAnimations ? handleInteraction : undefined}
-        onTouchStart={isTouch ? handleTouchStart : undefined}
-        onTouchEnd={isTouch ? handleTouchEnd : undefined}
+        onClick={enableFlip && !isTouch ? handleClick : undefined}
+        onTouchStart={enableFlip && isTouch ? handleTouchStart : undefined}
+        onTouchEnd={enableFlip && isTouch ? handleTouchEnd : undefined}
         onMouseEnter={() => !isTouch && setIsHovered(true)}
         onMouseLeave={() => !isTouch && setIsHovered(false)}
       >
-        {shouldSimplifyAnimations ? (
-          // Simplified version for low-power/incompatible devices
+        {shouldSimplifyAnimations && !enableFlip ? (
+          // Static version for devices that can't handle any animations
+          <div className="w-full h-full">
+            <SimplifiedFrontCard 
+              name={name}
+              title={title}
+              expertise={expertise}
+              image={image}
+              linkedin={linkedin}
+              twitter={twitter}
+              email={email}
+              onFlip={() => {}}
+            />
+          </div>
+        ) : shouldSimplifyAnimations && enableFlip ? (
+          // Simplified flip version for mobile devices
           <div className="w-full h-full">
             {!isFlipped ? (
               <SimplifiedFrontCard 
@@ -495,10 +552,10 @@ const styles = `
   }
   
   @media (hover: none) and (pointer: coarse) {
-    .hover\:scale-105:hover {
+    .hover:scale-105:hover {
       transform: scale(1);
     }
-    .hover\:scale-110:hover {
+    .hover:scale-110:hover {
       transform: scale(1);
     }
     
