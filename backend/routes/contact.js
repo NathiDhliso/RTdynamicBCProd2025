@@ -25,43 +25,19 @@ const contactSchema = Joi.object({
   })
 });
 
-// POST /api/contact - Handle contact form submission
-router.post('/', async (req, res) => {
+// Async email sending function that doesn't block the response
+const sendEmailsAsync = async (formData) => {
   try {
-    // Validate request body
-    const { error, value } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        error: 'Validation failed',
-        details: error.details.map(detail => ({
-          field: detail.path[0],
-          message: detail.message
-        }))
-      });
-    }
-
-    const formData = value;
+    // Create email template
+    const emailTemplate = createContactEmailTemplate(formData);
     
-    // Log the submission (for debugging)
-    console.log('📧 Contact form submission received:', {
-      name: formData.name,
-      email: formData.email,
-      subject: formData.subject,
-      timestamp: new Date().toISOString()
-    });
+    // Send email to business
+    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
+    await sendEmail(recipientEmail, emailTemplate);
+    console.log('✅ Business notification email sent successfully');
 
-    // For local development, skip email sending to avoid AWS SES errors
-    if (process.env.NODE_ENV === 'production') {
-      // Create email template
-      const emailTemplate = createContactEmailTemplate(formData);
-      
-      // Send email to business
-      const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
-      await sendEmail(recipientEmail, emailTemplate);
-
-      // Send confirmation email to customer (optional)
-      if (process.env.SEND_CONFIRMATION === 'true') {
+    // Send confirmation email to customer (optional)
+    if (process.env.SEND_CONFIRMATION === 'true') {
       const confirmationTemplate = {
         subject: 'Thank you for contacting RT Dynamic Business Consulting',
         html: `
@@ -123,9 +99,54 @@ router.post('/', async (req, res) => {
         console.log('✅ Confirmation email sent to customer');
       } catch (confirmationError) {
         console.error('⚠️ Failed to send confirmation email:', confirmationError.message);
-        // Don't fail the main request if confirmation email fails
+        // Don't fail if confirmation email fails
       }
     }
+  } catch (error) {
+    console.error('❌ Async email sending failed:', error.message);
+    // Log error but don't throw - emails are sent in background
+  }
+};
+
+// POST /api/contact - Handle contact form submission
+router.post('/', async (req, res) => {
+  try {
+    // Validate request body
+    const { error, value } = contactSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        details: error.details.map(detail => ({
+          field: detail.path[0],
+          message: detail.message
+        }))
+      });
+    }
+
+    const formData = value;
+    
+    // Log the submission (for debugging)
+    console.log('📧 Contact form submission received:', {
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject,
+      timestamp: new Date().toISOString()
+    });
+
+    // Return success response immediately
+    res.status(200).json({
+      success: true,
+      message: 'Your message has been sent successfully. We will respond within 24 hours.',
+      timestamp: new Date().toISOString()
+    });
+
+    // Send emails asynchronously in background (non-blocking)
+    if (process.env.NODE_ENV === 'production') {
+      // Fire and forget - don't await this
+      sendEmailsAsync(formData).catch(error => {
+        console.error('❌ Background email sending failed:', error.message);
+      });
     } else {
       // Development mode - just log the form data without sending emails
       console.log('📝 Contact form submission (development mode):', {
@@ -136,13 +157,6 @@ router.post('/', async (req, res) => {
         timestamp: new Date().toISOString()
       });
     }
-
-    // Return success response
-    res.status(200).json({
-      success: true,
-      message: 'Your message has been sent successfully. We will respond within 24 hours.',
-      timestamp: new Date().toISOString()
-    });
 
   } catch (error) {
     console.error('❌ Contact form submission error:', error);

@@ -72,45 +72,19 @@ const questionnaireSchema = Joi.object({
   }).optional()
 });
 
-// POST /api/questionnaire - Handle questionnaire submission
-router.post('/', async (req, res) => {
+// Async email sending function for questionnaire that doesn't block the response
+const sendQuestionnaireEmailsAsync = async (formData) => {
   try {
-    // Validate request body
-    const { error, value } = questionnaireSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        error: 'Validation failed',
-        details: error.details.map(detail => ({
-          field: detail.path[0],
-          message: detail.message
-        }))
-      });
-    }
-
-    const formData = value;
+    // Create email template
+    const emailTemplate = createQuestionnaireEmailTemplate(formData);
     
-    // Log the submission (for debugging)
-    console.log('📊 Business Health Check submission received:', {
-      companyName: formData.companyName,
-      entityType: formData.entityType,
-      contactName: formData.contactName,
-      email: formData.email,
-      primaryGoal: formData.primaryGoal,
-      timestamp: new Date().toISOString()
-    });
+    // Send email to business
+    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
+    await sendEmail(recipientEmail, emailTemplate);
+    console.log('✅ Business questionnaire notification email sent successfully');
 
-    // For local development, skip email sending to avoid AWS SES errors
-    if (process.env.NODE_ENV === 'production') {
-      // Create email template
-      const emailTemplate = createQuestionnaireEmailTemplate(formData);
-      
-      // Send email to business
-      const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
-      await sendEmail(recipientEmail, emailTemplate);
-
-      // Send confirmation email to customer (optional)
-      if (process.env.SEND_CONFIRMATION === 'true') {
+    // Send confirmation email to customer (optional)
+    if (process.env.SEND_CONFIRMATION === 'true') {
       const confirmationTemplate = {
         subject: 'Thank you for completing the Business Health Check - RT Dynamic',
         html: `
@@ -188,12 +162,64 @@ router.post('/', async (req, res) => {
       
       try {
         await sendEmail(formData.email, confirmationTemplate);
-        console.log('✅ Confirmation email sent to customer');
+        console.log('✅ Questionnaire confirmation email sent to customer');
       } catch (confirmationError) {
-        console.error('⚠️ Failed to send confirmation email:', confirmationError.message);
-        // Don't fail the main request if confirmation email fails
+        console.error('⚠️ Failed to send questionnaire confirmation email:', confirmationError.message);
+        // Don't fail if confirmation email fails
       }
     }
+  } catch (error) {
+    console.error('❌ Async questionnaire email sending failed:', error.message);
+    // Log error but don't throw - emails are sent in background
+  }
+};
+
+// POST /api/questionnaire - Handle questionnaire submission
+router.post('/', async (req, res) => {
+  try {
+    // Validate request body
+    const { error, value } = questionnaireSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        details: error.details.map(detail => ({
+          field: detail.path[0],
+          message: detail.message
+        }))
+      });
+    }
+
+    const formData = value;
+    
+    // Log the submission (for debugging)
+    console.log('📊 Business Health Check submission received:', {
+      companyName: formData.companyName,
+      entityType: formData.entityType,
+      contactName: formData.contactName,
+      email: formData.email,
+      primaryGoal: formData.primaryGoal,
+      timestamp: new Date().toISOString()
+    });
+
+    // Return success response immediately
+    res.status(200).json({
+      success: true,
+      message: 'Your Business Health Check has been submitted successfully. We will analyze your responses and contact you within 24 hours with customized recommendations.',
+      data: {
+        companyName: formData.companyName,
+        primaryGoal: formData.primaryGoal,
+        submissionId: `BHC-${Date.now()}`,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    // Send emails asynchronously in background (non-blocking)
+    if (process.env.NODE_ENV === 'production') {
+      // Fire and forget - don't await this
+      sendQuestionnaireEmailsAsync(formData).catch(error => {
+        console.error('❌ Background questionnaire email sending failed:', error.message);
+      });
     } else {
       // Development mode - just log the questionnaire data without sending emails
       console.log('📊 Business Health Check submission (development mode):', {
@@ -206,18 +232,6 @@ router.post('/', async (req, res) => {
         timestamp: new Date().toISOString()
       });
     }
-
-    // Return success response
-    res.status(200).json({
-      success: true,
-      message: 'Your Business Health Check has been submitted successfully. We will analyze your responses and contact you within 24 hours with customized recommendations.',
-      data: {
-        companyName: formData.companyName,
-        primaryGoal: formData.primaryGoal,
-        submissionId: `BHC-${Date.now()}`,
-        timestamp: new Date().toISOString()
-      }
-    });
 
   } catch (error) {
     console.error('❌ Questionnaire submission error:', error);

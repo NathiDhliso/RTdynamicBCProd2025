@@ -43,6 +43,9 @@ const ContactPage: React.FC = () => {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmittingForm(true);
     
+    // Keep reference so we can clear it in finally even if fetch throws
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     try {
       const rawApi = import.meta.env.VITE_API_URL ||
     (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
@@ -50,9 +53,17 @@ const ContactPage: React.FC = () => {
     ? rawApi.replace('http://', 'https://')
     : rawApi;
       
-      // Create AbortController for timeout handling
+      // Create AbortController for timeout handling (with explicit reason when available)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const abortWithReason = () => {
+        try {
+          controller.abort(new DOMException('Request timed out', 'TimeoutError'));
+        } catch (_) {
+          controller.abort();
+        }
+      };
+      // 45 second timeout to accommodate occasional cold starts or email latency in production
+      timeoutId = setTimeout(abortWithReason, 45000);
       
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
@@ -63,8 +74,6 @@ const ContactPage: React.FC = () => {
         signal: controller.signal,
       });
       
-      clearTimeout(timeoutId);
-
       const result = await response.json();
 
       if (!response.ok) {
@@ -80,7 +89,7 @@ const ContactPage: React.FC = () => {
         setIsSubmitted(false);
       }, 5000);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error sending message:', error);
       
       // Show error animation
@@ -94,17 +103,21 @@ const ContactPage: React.FC = () => {
       
       // Provide specific error messages based on error type
       let errorMessage = 'Failed to send message. Please try again or contact us directly.';
-      
-      if (error.name === 'AbortError') {
+
+      const name = (error && typeof error === 'object' && 'name' in error) ? (error as any).name : '';
+      const message = (error && typeof error === 'object' && 'message' in error) ? String((error as any).message || '') : '';
+
+      if (name === 'TimeoutError' || name === 'AbortError' || message.toLowerCase().includes('aborted')) {
         errorMessage = 'Request timed out. Please check your internet connection and try again.';
-      } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_TIMED_OUT')) {
+      } else if (message.includes('Failed to fetch') || message.includes('ERR_CONNECTION_TIMED_OUT')) {
         errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
-      } else if (error.message.includes('CORS')) {
+      } else if (message.includes('CORS')) {
         errorMessage = 'There was a configuration issue. Please try again in a few moments.';
       }
       
       alert(errorMessage);
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       setIsSubmittingForm(false);
     }
   };

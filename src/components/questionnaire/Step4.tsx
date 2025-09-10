@@ -46,6 +46,9 @@ const Step4: React.FC = () => {
     updateFormData(data);
     setIsSubmitting(true);
     
+    // Keep reference so we can clear it in finally even if fetch throws
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    
     try {
       // Get the complete form data
       const completeData = { ...formData, ...data };
@@ -65,12 +68,26 @@ const Step4: React.FC = () => {
   const API_BASE_URL = (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawApi.startsWith('http://'))
     ? rawApi.replace('http://', 'https://')
     : rawApi;
+
+      // Create AbortController for timeout handling (with explicit reason when available)
+      const controller = new AbortController();
+      const abortWithReason = () => {
+        try {
+          controller.abort(new DOMException('Request timed out', 'TimeoutError'));
+        } catch (_) {
+          controller.abort();
+        }
+      };
+      // 45 second timeout to accommodate occasional cold starts or email latency in production
+      timeoutId = setTimeout(abortWithReason, 45000);
+
       const response = await fetch(`${API_BASE_URL}/api/questionnaire`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
       const result = await response.json();
@@ -87,10 +104,26 @@ const Step4: React.FC = () => {
         reset();
       }, 8000);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error submitting questionnaire:', error);
-      alert('Failed to submit questionnaire. Please try again or contact us directly.');
+      
+      // Provide specific error messages based on error type
+      let errorMessage = 'Failed to submit questionnaire. Please try again or contact us directly.';
+
+      const name = (error && typeof error === 'object' && 'name' in error) ? (error as any).name : '';
+      const message = (error && typeof error === 'object' && 'message' in error) ? String((error as any).message || '') : '';
+
+      if (name === 'TimeoutError' || name === 'AbortError' || message.toLowerCase().includes('aborted')) {
+        errorMessage = 'Request timed out. Please check your internet connection and try again.';
+      } else if (message.includes('Failed to fetch') || message.includes('ERR_CONNECTION_TIMED_OUT')) {
+        errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
+      } else if (message.includes('CORS')) {
+        errorMessage = 'There was a configuration issue. Please try again in a few moments.';
+      }
+      
+      alert(errorMessage);
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       setIsSubmitting(false);
     }
   };
