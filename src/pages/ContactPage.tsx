@@ -44,7 +44,8 @@ const ContactPage: React.FC = () => {
     setIsSubmittingForm(true);
     
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
       
       // Create AbortController for timeout handling
       const controller = new AbortController();

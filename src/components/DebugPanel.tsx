@@ -32,7 +32,8 @@ interface DebugInfo {
 
 const DebugPanel: React.FC = () => {
   const [debugInfo, setDebugInfo] = useState<DebugInfo>({
-    apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+    apiUrl: import.meta.env.VITE_API_URL || 
+      (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com'),
     healthStatus: 'loading',
     envStatus: 'loading'
   });
