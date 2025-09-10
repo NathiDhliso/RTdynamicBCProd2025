@@ -65,7 +65,61 @@ Redeploy your Amplify app to pick up the new environment variable.
 - `.platform/nodejs.config` - Platform-specific config
 - `Procfile` - Process definition
 
+## SSL Certificate Configuration (Optional)
+
+### Current Setup: HTTP Only
+The current configuration uses HTTP only to avoid SSL certificate errors. The backend is accessible at:
+- `http://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com`
+
+### To Enable HTTPS (Advanced)
+If you need HTTPS for your backend API:
+
+1. **Option A: AWS Certificate Manager (Recommended)**
+   ```bash
+   # Request a certificate for your domain
+   aws acm request-certificate \
+     --domain-name api.rtdynamicbc.co.za \
+     --validation-method DNS
+   ```
+
+2. **Option B: Upload Your Own Certificate**
+   ```bash
+   # Upload certificate to IAM
+   aws iam upload-server-certificate \
+     --server-certificate-name rtdbc-ssl-cert \
+     --certificate-body file://certificate.crt \
+     --private-key file://private.key \
+     --certificate-chain file://certificate-chain.crt
+   ```
+
+3. **Update .ebextensions Configuration**
+   Edit `.ebextensions/01-disable-https.config`:
+   ```yaml
+   option_settings:
+     aws:elb:listener:443:
+       ListenerEnabled: true
+       Protocol: HTTPS
+       InstancePort: 80
+       InstanceProtocol: HTTP
+       SSLCertificateId: arn:aws:acm:us-east-1:ACCOUNT:certificate/CERT-ID
+   ```
+
+### Important Notes:
+- HTTPS is not required for API functionality
+- The frontend handles HTTPS; backend can remain HTTP
+- Only enable HTTPS if you have a valid SSL certificate
+
 ## Troubleshooting
+
+### SSL Certificate Errors
+- **Error**: "Secure Listeners need to specify a SSLCertificateId"
+- **Solution**: Use the provided HTTP-only configuration or obtain a valid SSL certificate
+
+### Load Balancer Errors
+- **Error**: "LoadBalancer type option cannot be changed"
+- **Solution**: Delete and recreate the environment, or use the provided configuration
+
+### General Issues
 - Ensure all environment variables are set
 - Check that AWS SES is configured for your email domain
 - Verify CORS settings allow your frontend domain
