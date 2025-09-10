@@ -121,7 +121,7 @@ const AboutPage = () => {
         "Major clients include ASSORE Ltd, South African Airways (SAA), and Volvo Group Southern Africa",
         "Expert in financial reporting, South African tax, corporate governance, and compliance"
       ],
-      image: "/rabelanipic.jpg",
+      image: "/RabelaniSuitedPic.jpg",
       linkedin: "https://linkedin.com/in/rabelani-neluheni",
       email: "neluhenirabelani@gmail.com"
     },
@@ -138,7 +138,7 @@ const AboutPage = () => {
         "Specialist in Product Control at Standard Bank Group",
         "Expert in financial reporting, tax compliance, and strategic financial management"
       ],
-      image: "/Tshepishopic.png",
+      image: "/TshephishoProPic.jpg",
       linkedin: "https://linkedin.com/in/tshephisho-ntsoane",
       email: "tshephisho@rtdynamicbc.co.za"
     }
