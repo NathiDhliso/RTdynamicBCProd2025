@@ -1,0 +1,75 @@
+name: Deploy Backend to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        npm ci --only=production
+
+    - name: Create deployment package
+      run: |
+        cd backend
+        zip -r ../backend-deploy.zip . -x "node_modules/*" "*.git*" "*.env*" "README.md" "backend.zip"
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v22
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: rtdbc-backend
+        environment_name: production
+        region: us-east-1
+        version_label: ${{ github.sha }}
+        deployment_package: backend-deploy.zip
+        wait_for_environment_recovery: 300
+
+    - name: Set Environment Variables
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set region us-east-1
+        
+        aws elasticbeanstalk update-environment \
+          --application-name rtdbc-backend \
+          --environment-name production \
+          --option-settings \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=NODE_ENV,Value=production \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=FRONTEND_URL,Value=${{ secrets.FRONTEND_URL }} \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=AWS_REGION,Value=us-east-1 \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=FROM_EMAIL,Value=${{ secrets.FROM_EMAIL }} \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=BUSINESS_EMAIL,Value=${{ secrets.BUSINESS_EMAIL }} \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=SEND_CONFIRMATION,Value=true \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=AWS_ACCESS_KEY_ID,Value=${{ secrets.AWS_SES_ACCESS_KEY_ID }} \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=AWS_SECRET_ACCESS_KEY,Value=${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
+
+    - name: Get Application URL
+      run: |
+        URL=$(aws elasticbeanstalk describe-environments \
+          --application-name rtdbc-backend \
+          --environment-names production \
+          --query 'Environments[0].CNAME' \
+          --output text)
+        echo "🚀 Backend deployed successfully!"
+        echo "📍 Backend URL: https://$URL"
+        echo "💡 Add this URL to your Amplify environment variable VITE_API_URL: https://$URL"
