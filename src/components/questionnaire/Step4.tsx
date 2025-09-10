@@ -60,8 +60,11 @@ const Step4: React.FC = () => {
 
       console.log('📊 Submitting Business Health Check with Quote:', payload);
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
+      const rawApi = import.meta.env.VITE_API_URL ||
+    (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
+  const API_BASE_URL = (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawApi.startsWith('http://'))
+    ? rawApi.replace('http://', 'https://')
+    : rawApi;
       const response = await fetch(`${API_BASE_URL}/api/questionnaire`, {
         method: 'POST',
         headers: {

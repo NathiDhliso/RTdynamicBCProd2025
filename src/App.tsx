@@ -42,7 +42,7 @@ function App() {
             </motion.div>
           } />
         </Routes>
-        <DebugPanel />
+        {(import.meta.env.DEV || import.meta.env.VITE_SHOW_DEBUG_PANEL === 'true') && <DebugPanel />}
       </div>
     </Router>
   );
