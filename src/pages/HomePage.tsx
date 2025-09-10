@@ -814,7 +814,7 @@ const HomePage: React.FC = () => {
                   </li>
                   <li className="flex items-center">
                     <Phone className="h-5 w-5 mr-3 text-emerald-400 flex-shrink-0" strokeWidth={1.5}/>
-                    <a href="tel:0736598177" className="hover:text-emerald-300 transition-colors">073 659 8177</a>
+                <a href="tel:0658920000" className="hover:text-emerald-300 transition-colors">065 892 0000</a>
                   </li>
                 </ul>
               </div>

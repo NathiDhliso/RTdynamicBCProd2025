@@ -107,7 +107,7 @@ const ContactPage: React.FC = () => {
     {
       icon: <Phone className="h-6 w-6 text-emerald-300" strokeWidth={1.5} />,
       title: "Phone",
-      value: "073 659 8177",
+      value: "065 892 0000 / 069 576 0121",
       description: "Mon-Fri: 8AM-6PM, Sat: 9AM-2PM"
     },
     {

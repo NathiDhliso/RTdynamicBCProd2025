@@ -64,7 +64,7 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-emerald-300" strokeWidth={1.5} />
-                <span className="text-slate-400 font-light" style={{ fontWeight: 300 }}>073 659 8177</span>
+                <span className="text-slate-400 font-light" style={{ fontWeight: 300 }}>065 892 0000</span>
               </li>
               <li className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-emerald-300" strokeWidth={1.5} />
