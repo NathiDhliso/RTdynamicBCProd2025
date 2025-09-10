@@ -728,11 +728,51 @@ const createQuestionnaireEmailTemplate = (formData) => {
               </div>
             </div>
 
-            <div class="section">
-              <div class="section-header">
-                <div class="section-title">
-                  <span class="section-icon">📞</span>
-                  Contact Information
+            ${formData.quoteDetails ? `
+            <div class="section">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-icon">💰</span>
+                  Estimated Quote (Internal Use Only)
+                </div>
+              </div>
+              <div class="section-content">
+                <div class="field-grid">
+                  <div class="field highlight">
+                    <span class="label">Monthly Quote</span>
+                    <div class="value">R${formData.quoteDetails.quote.toLocaleString()}</div>
+                  </div>
+                  <div class="field">
+                    <span class="label">Base Services</span>
+                    <div class="value">R${formData.quoteDetails.basePrice.toLocaleString()}</div>
+                  </div>
+                  <div class="field">
+                    <span class="label">Revenue Multiplier</span>
+                    <div class="value">${formData.quoteDetails.revenueModifier}x</div>
+                  </div>
+                  <div class="field">
+                    <span class="label">Complexity Multiplier</span>
+                    <div class="value">${formData.quoteDetails.complexityModifier}x</div>
+                  </div>
+                  ${formData.quoteDetails.payrollCost > 0 ? `
+                  <div class="field">
+                    <span class="label">Payroll Cost</span>
+                    <div class="value">R${formData.quoteDetails.payrollCost.toLocaleString()}</div>
+                  </div>` : ''}
+                  <div class="field full-width">
+                    <span class="label">Complexity Factors</span>
+                    <div class="value">${formData.quoteDetails.complexityFactors && formData.quoteDetails.complexityFactors.length > 0 ? formData.quoteDetails.complexityFactors.join(', ') : 'No additional complexity factors'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+
+            <div class="section">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-icon">📞</span>
+                  Contact Information
                 </div>
               </div>
               <div class="section-content">
@@ -796,10 +836,20 @@ const createQuestionnaireEmailTemplate = (formData) => {
       ` : ''}
       
       == Goals & Challenges ==
-      Primary Goal: ${formData.primaryGoal}
-      Business Challenges: ${formData.businessChallenges}
-      
-      == Contact Information ==
+      Primary Goal: ${formData.primaryGoal}
+      Business Challenges: ${formData.businessChallenges}
+      
+      ${formData.quoteDetails ? `
+      == Estimated Quote (Internal Use Only) ==
+      Monthly Quote: R${formData.quoteDetails.quote.toLocaleString()}
+      Base Services: R${formData.quoteDetails.basePrice.toLocaleString()}
+      Revenue Multiplier: ${formData.quoteDetails.revenueModifier}x
+      Complexity Multiplier: ${formData.quoteDetails.complexityModifier}x
+      ${formData.quoteDetails.payrollCost > 0 ? `Payroll Cost: R${formData.quoteDetails.payrollCost.toLocaleString()}` : ''}
+      Complexity Factors: ${formData.quoteDetails.complexityFactors && formData.quoteDetails.complexityFactors.length > 0 ? formData.quoteDetails.complexityFactors.join(', ') : 'No additional complexity factors'}
+      ` : ''}
+      
+      == Contact Information ==
       Contact Name: ${formData.contactName}
       Email: ${formData.email}
       Phone Number: ${formData.phoneNumber}
@@ -853,6 +903,9 @@ const sendEmail = async ({ to, from, subject, html, text }) => {
     throw error;
   }
 };
+
+// Export the functions for use in other modules
+export { createContactEmailTemplate, createQuestionnaireEmailTemplate, sendEmail };
 
 /**
  * AWS Lambda handler function to process incoming requests and send emails.

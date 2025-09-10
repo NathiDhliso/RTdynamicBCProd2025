@@ -9,9 +9,7 @@ import Step3 from '@/components/questionnaire/Step3';
 import Step4 from '@/components/questionnaire/Step4';
 
 const QuestionnairePage: React.FC = () => {
-  const { step, prevStep, shouldShowComplianceStep, formData } = useQuestionnaireStore();
-
-  const totalSteps = shouldShowComplianceStep() ? 4 : 3;
+  const { step, prevStep, shouldShowComplianceStep, formData: _formData } = useQuestionnaireStore();
 
   // Calculate actual progress considering conditional step 3
   const progress = useMemo(() => {
@@ -26,7 +24,7 @@ const QuestionnairePage: React.FC = () => {
     
     // We subtract 1 from currentStep because we want progress to be 100% at the START of the final step's submission
     return ((currentStep - 1) / actualTotalSteps) * 100;
-  }, [step, formData.entityType, shouldShowComplianceStep]);
+  }, [step, shouldShowComplianceStep]);
 
   const stepDisplay = useMemo(() => {
     const showCompliance = shouldShowComplianceStep();
@@ -38,7 +36,7 @@ const QuestionnairePage: React.FC = () => {
     }
     
     return `Step ${currentStep} of ${actualTotalSteps}`;
-  }, [step, formData.entityType, shouldShowComplianceStep]);
+  }, [step, shouldShowComplianceStep]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden py-20" style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif' }}>

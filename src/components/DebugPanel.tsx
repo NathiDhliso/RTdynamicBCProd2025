@@ -1,12 +1,32 @@
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
+interface HealthData {
+  status: string;
+  message: string;
+  timestamp: string;
+}
+
+interface EnvData {
+  nodeEnv?: string;
+  port?: number;
+  frontendUrl?: string;
+  awsRegion?: string;
+  fromEmail?: string;
+  businessEmail?: string;
+  sendConfirmation?: string;
+  hasAwsAccessKey?: boolean;
+  hasAwsSecretKey?: boolean;
+  timestamp?: string;
+  [key: string]: unknown;
+}
+
 interface DebugInfo {
   apiUrl: string;
   healthStatus: 'loading' | 'success' | 'error';
-  healthData?: any;
+  healthData?: HealthData;
   envStatus: 'loading' | 'success' | 'error';
-  envData?: any;
+  envData?: EnvData;
   error?: string;
 }
 

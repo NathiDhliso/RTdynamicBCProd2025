@@ -58,7 +58,18 @@ const questionnaireSchema = Joi.object({
   phoneNumber: Joi.string().min(1).max(20).required().messages({
     'string.empty': 'Phone number is required',
     'string.max': 'Phone number must be less than 20 characters'
-  })
+  }),
+  
+  // Quote details (optional - calculated on frontend)
+  quoteDetails: Joi.object({
+    quote: Joi.number().required(),
+    basePrice: Joi.number().required(),
+    payrollCost: Joi.number().required(),
+    revenueModifier: Joi.number().required(),
+    complexityModifier: Joi.number().required(),
+    complexityFactors: Joi.array().items(Joi.string()).optional(),
+    baseServices: Joi.object().optional()
+  }).optional()
 });
 
 // POST /api/questionnaire - Handle questionnaire submission
