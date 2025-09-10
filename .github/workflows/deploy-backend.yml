@@ -38,7 +38,7 @@ jobs:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: rtdbc-backend
-        environment_name: production
+        environment_name: rtdbc-production
         region: us-east-1
         version_label: ${{ github.sha }}
         deployment_package: backend-deploy.zip
@@ -52,7 +52,7 @@ jobs:
         
         aws elasticbeanstalk update-environment \
           --application-name rtdbc-backend \
-          --environment-name production \
+          --environment-name rtdbc-production \
           --option-settings \
             Namespace=aws:elasticbeanstalk:application:environment,OptionName=NODE_ENV,Value=production \
             Namespace=aws:elasticbeanstalk:application:environment,OptionName=FRONTEND_URL,Value=${{ secrets.FRONTEND_URL }} \
@@ -67,7 +67,7 @@ jobs:
       run: |
         URL=$(aws elasticbeanstalk describe-environments \
           --application-name rtdbc-backend \
-          --environment-names production \
+          --environment-names rtdbc-production \
           --query 'Environments[0].CNAME' \
           --output text)
         echo "🚀 Backend deployed successfully!"
