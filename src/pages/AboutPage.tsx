@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Award, Users, Globe, TrendingUp, Sparkles, Target, Rocket, Shield } from 'lucide-react';
 
+// Updated founder images: RabelaniSuitedPic.jpg and TshephishoProPic.jpg
+
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
