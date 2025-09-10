@@ -100,15 +100,17 @@ router.post('/', async (req, res) => {
       timestamp: new Date().toISOString()
     });
 
-    // Create email template
-    const emailTemplate = createQuestionnaireEmailTemplate(formData);
-    
-    // Send email to business
-    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
-    await sendEmail(recipientEmail, emailTemplate);
+    // For local development, skip email sending to avoid AWS SES errors
+    if (process.env.NODE_ENV === 'production') {
+      // Create email template
+      const emailTemplate = createQuestionnaireEmailTemplate(formData);
+      
+      // Send email to business
+      const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
+      await sendEmail(recipientEmail, emailTemplate);
 
-    // Send confirmation email to customer (optional)
-    if (process.env.SEND_CONFIRMATION === 'true') {
+      // Send confirmation email to customer (optional)
+      if (process.env.SEND_CONFIRMATION === 'true') {
       const confirmationTemplate = {
         subject: 'Thank you for completing the Business Health Check - RT Dynamic',
         html: `
@@ -191,6 +193,18 @@ router.post('/', async (req, res) => {
         console.error('⚠️ Failed to send confirmation email:', confirmationError.message);
         // Don't fail the main request if confirmation email fails
       }
+    }
+    } else {
+      // Development mode - just log the questionnaire data without sending emails
+      console.log('📊 Business Health Check submission (development mode):', {
+        companyName: formData.companyName,
+        entityType: formData.entityType,
+        contactName: formData.contactName,
+        email: formData.email,
+        primaryGoal: formData.primaryGoal,
+        quote: formData.quoteDetails?.quote || 'No quote',
+        timestamp: new Date().toISOString()
+      });
     }
 
     // Return success response

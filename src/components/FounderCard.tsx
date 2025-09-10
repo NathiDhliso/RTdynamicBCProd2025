@@ -66,25 +66,45 @@ const FounderCard = ({
   const handleInteraction = (e) => {
     // Prevent flip on link clicks
     const target = e.target;
-    if (target.closest('a')) {
+    if (target.closest('a') || target.closest('button')) {
       e.stopPropagation();
       return;
     }
     setIsFlipped(!isFlipped);
   };
 
-  // Simplified animations for mobile/low-power devices
-  const shouldSimplifyAnimations = prefersReducedMotion || isLowPower || (isMobile && !CSS.supports('transform-style', 'preserve-3d'));
+  // Enhanced mobile compatibility check
+  const shouldSimplifyAnimations = prefersReducedMotion || isLowPower || 
+    (isMobile && (!CSS.supports('transform-style', 'preserve-3d') || 
+     !CSS.supports('backface-visibility', 'hidden') || 
+     /iPhone|iPad|iPod|Android.*Mobile/i.test(navigator.userAgent)));
+
+  // Touch-specific handling for mobile devices
+  const handleTouchStart = (e) => {
+    if (shouldSimplifyAnimations) {
+      handleInteraction(e);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault(); // Prevent ghost clicks
+  };
 
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div 
-        className={`h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative ${!shouldSimplifyAnimations ? 'cursor-pointer' : ''}`}
+        className={`founder-card-container h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative ${
+          !shouldSimplifyAnimations ? 'cursor-pointer' : ''
+        } ${
+          shouldSimplifyAnimations ? 'mobile-fallback' : 'mobile-optimized'
+        }`}
         style={{ 
           perspective: shouldSimplifyAnimations ? 'none' : '1500px',
           WebkitPerspective: shouldSimplifyAnimations ? 'none' : '1500px'
         }}
         onClick={!shouldSimplifyAnimations ? handleInteraction : undefined}
+        onTouchStart={isTouch ? handleTouchStart : undefined}
+        onTouchEnd={isTouch ? handleTouchEnd : undefined}
         onMouseEnter={() => !isTouch && setIsHovered(true)}
         onMouseLeave={() => !isTouch && setIsHovered(false)}
       >
@@ -475,11 +495,47 @@ const styles = `
   }
   
   @media (hover: none) and (pointer: coarse) {
-    .hover\\:scale-105:hover {
+    .hover\:scale-105:hover {
       transform: scale(1);
     }
-    .hover\\:scale-110:hover {
+    .hover\:scale-110:hover {
       transform: scale(1);
+    }
+    
+    /* Improve touch targets for mobile */
+    .founder-card-container {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    /* Disable 3D transforms on problematic mobile browsers */
+    .mobile-fallback {
+      transform-style: flat !important;
+      backface-visibility: visible !important;
+      perspective: none !important;
+    }
+    
+    /* Optimize animations for mobile performance */
+    .mobile-optimized {
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+  }
+  
+  /* Additional mobile-specific optimizations */
+  @media screen and (max-width: 768px) {
+    .animate-pulse {
+      animation: none;
+    }
+    
+    .animate-spin-slow {
+      animation: none;
+    }
+    
+    /* Reduce motion for better mobile performance */
+    .transition-transform {
+      transition-duration: 0.2s;
     }
   }
 `;

@@ -340,89 +340,115 @@ const HomePage: React.FC = () => {
 
     // --- REVEAL ANIMATIONS WITH SMOOTH ENTRANCE ---
     
-    // Stats section with wave effect
+    // Stats section with mobile-optimized animations
     gsap.utils.toArray<HTMLElement>(".gsap-stat-card").forEach((card, _index) => {
-      gsap.fromTo(card, 
-        {
-          y: 150,
-          opacity: 0,
-          scale: 0.8,
-          rotationY: -30,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          rotationY: 0,
-          duration: 1.5,
-          ease: "back.out(1.2)",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            end: "top 50%",
-            scrub: 1,
-            toggleActions: "play none none reverse"
-          }
+      // Simplified animation for mobile devices
+      const mobileAnimation = {
+        y: isMobile ? 50 : 150,
+        opacity: 0,
+        scale: isMobile ? 0.95 : 0.8,
+        rotationY: isMobile ? 0 : -30,
+      };
+      
+      const targetAnimation = {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        rotationY: 0,
+        duration: isMobile ? 0.8 : 1.5,
+        ease: isMobile ? "power2.out" : "back.out(1.2)",
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          end: "top 50%",
+          scrub: isMobile ? 0.5 : 1,
+          toggleActions: "play none none reverse"
         }
-      );
+      };
+      
+      gsap.fromTo(card, mobileAnimation, targetAnimation);
 
-      // Float animation on hover
-      card.addEventListener('mouseenter', () => {
-        gsap.to(card, {
-          y: -10,
-          scale: 1.05,
-          duration: 0.3,
-          ease: "power2.out"
+      // Mobile-friendly interaction animations
+      if (!isMobile) {
+        // Desktop hover effects
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, {
+            y: -10,
+            scale: 1.05,
+            duration: 0.3,
+            ease: "power2.out"
+          });
         });
-      });
 
-      card.addEventListener('mouseleave', () => {
-        gsap.to(card, {
-          y: 0,
-          scale: 1,
-          duration: 0.3,
-          ease: "power2.out"
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            y: 0,
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out"
+          });
         });
-      });
+      } else {
+        // Mobile touch effects
+        card.addEventListener('touchstart', () => {
+          gsap.to(card, {
+            scale: 0.98,
+            duration: 0.1,
+            ease: "power2.out"
+          });
+        });
+
+        card.addEventListener('touchend', () => {
+          gsap.to(card, {
+            scale: 1,
+            duration: 0.2,
+            ease: "power2.out"
+          });
+        });
+      }
     });
 
-    // Features section with 3D card flip effect
+    // Features section with mobile-optimized animations
     gsap.utils.toArray<HTMLElement>(".gsap-feature-card").forEach((card, index) => {
       const _row = Math.floor(index / 3);
-      const _col = index % 3;
+      const col = index % 3;
       
-      // Set initial 3D perspective
-      gsap.set(card, {
-        transformPerspective: 1000,
-        transformStyle: "preserve-3d"
-      });
+      // Mobile-friendly 3D perspective settings
+      if (!isMobile) {
+        gsap.set(card, {
+          transformPerspective: 1000,
+          transformStyle: "preserve-3d"
+        });
+      }
 
-      // Entrance animation
-      gsap.fromTo(card,
-        {
-          y: 200,
-          opacity: 0,
-          rotationX: -90,
-          scale: 0.7,
-          z: -200
-        },
-        {
-          y: 0,
-          opacity: 1,
-          rotationX: 0,
-          scale: 1,
-          z: 0,
-          duration: 1.5,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",
-            end: "top 40%",
-            scrub: 1.5,
-            toggleActions: "play none none reverse"
-          }
+      // Mobile-optimized entrance animation
+      const fromAnimation = {
+        y: isMobile ? 80 : 200,
+        opacity: 0,
+        rotationX: isMobile ? 0 : -90,
+        scale: isMobile ? 0.9 : 0.7,
+        z: isMobile ? 0 : -200
+      };
+      
+      const toAnimation = {
+        y: 0,
+        opacity: 1,
+        rotationX: 0,
+        scale: 1,
+        z: 0,
+        duration: isMobile ? 1.0 : 1.5,
+        delay: isMobile ? col * 0.1 : 0,
+        ease: isMobile ? "power2.out" : "power3.out",
+        scrollTrigger: {
+          trigger: card,
+          start: "top 90%",
+          end: "top 40%",
+          scrub: isMobile ? 0.8 : 1.5,
+          toggleActions: "play none none reverse"
         }
-      );
+      };
+      
+      gsap.fromTo(card, fromAnimation, toAnimation);
 
       // Magnetic hover effect
       if (!isMobile) {

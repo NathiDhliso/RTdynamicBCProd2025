@@ -51,15 +51,17 @@ router.post('/', async (req, res) => {
       timestamp: new Date().toISOString()
     });
 
-    // Create email template
-    const emailTemplate = createContactEmailTemplate(formData);
-    
-    // Send email to business
-    const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
-    await sendEmail(recipientEmail, emailTemplate);
+    // For local development, skip email sending to avoid AWS SES errors
+    if (process.env.NODE_ENV === 'production') {
+      // Create email template
+      const emailTemplate = createContactEmailTemplate(formData);
+      
+      // Send email to business
+      const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
+      await sendEmail(recipientEmail, emailTemplate);
 
-    // Send confirmation email to customer (optional)
-    if (process.env.SEND_CONFIRMATION === 'true') {
+      // Send confirmation email to customer (optional)
+      if (process.env.SEND_CONFIRMATION === 'true') {
       const confirmationTemplate = {
         subject: 'Thank you for contacting RT Dynamic Business Consulting',
         html: `
@@ -123,6 +125,16 @@ router.post('/', async (req, res) => {
         console.error('⚠️ Failed to send confirmation email:', confirmationError.message);
         // Don't fail the main request if confirmation email fails
       }
+    }
+    } else {
+      // Development mode - just log the form data without sending emails
+      console.log('📝 Contact form submission (development mode):', {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message.substring(0, 100) + '...',
+        timestamp: new Date().toISOString()
+      });
     }
 
     // Return success response
