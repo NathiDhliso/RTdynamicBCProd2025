@@ -144,11 +144,13 @@ const Step4: React.FC = () => {
   }, [isSubmitted, prefersReducedMotion]);
 
   const primaryGoals = [
-    'Reduce costs',
-    'Improve efficiency',
-    'Ensure compliance',
-    'Growth planning',
-    'Risk management'
+    'Improve Financial Management',
+    'Ensure Tax Compliance',
+    'Reduce Accounting Costs',
+    'Prepare for Growth/Investment',
+    'Streamline Business Processes',
+    'Get Strategic Business Advice',
+    'Other'
   ];
 
   if (isSubmitted) {

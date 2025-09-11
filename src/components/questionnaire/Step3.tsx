@@ -65,7 +65,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('taxComplexity')}
-                value="Simple - Basic tax returns"
+                value="Simple"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Simple - Basic tax returns</span>
@@ -74,7 +74,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('taxComplexity')}
-                value="Moderate - Some complexity"
+                value="Moderate"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Moderate - Some complexity</span>
@@ -83,7 +83,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('taxComplexity')}
-                value="Complex - Multiple tax obligations"
+                value="Complex"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Complex - Multiple tax obligations</span>
@@ -103,7 +103,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('auditRequirements')}
-                value="Annual audit required"
+                value="Required"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Annual audit required</span>
@@ -112,7 +112,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('auditRequirements')}
-                value="Audit optional"
+                value="Voluntary"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Audit optional</span>
@@ -121,7 +121,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('auditRequirements')}
-                value="No audit required"
+                value="Not Required"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>No audit required</span>
@@ -141,7 +141,7 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('regulatoryReporting')}
-                value="Extensive reporting required"
+                value="Extensive"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Extensive reporting required</span>
@@ -150,16 +150,16 @@ const Step3: React.FC = () => {
               <input
                 type="radio"
                 {...register('regulatoryReporting')}
-                value="Moderate reporting"
+                value="Standard"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>Moderate reporting</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Standard reporting</span>
             </label>
             <label className="flex items-center">
               <input
                 type="radio"
                 {...register('regulatoryReporting')}
-                value="Minimal reporting"
+                value="Minimal"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Minimal reporting</span>

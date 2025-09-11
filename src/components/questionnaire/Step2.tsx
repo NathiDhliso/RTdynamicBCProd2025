@@ -41,6 +41,14 @@ const Step2: React.FC = () => {
   };
 
   const employeeCounts = [
+    '1-5',
+    '6-20',
+    '21-50',
+    '51-100',
+    'Over 100'
+  ];
+
+  const employeeCountLabels = [
     '1-5 employees',
     '6-20 employees',
     '21-50 employees',
@@ -78,7 +86,7 @@ const Step2: React.FC = () => {
               <input
                 type="radio"
                 {...register('hasEmployees')}
-                value="Yes, I have employees"
+                value="Yes"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, I have employees</span>
@@ -87,7 +95,7 @@ const Step2: React.FC = () => {
               <input
                 type="radio"
                 {...register('hasEmployees')}
-                value="No, I work alone"
+                value="No"
                 className="mr-3 text-accent focus:ring-accent"
               />
               <span className="text-white font-light" style={{ fontWeight: 300 }}>No, I work alone</span>
@@ -98,7 +106,7 @@ const Step2: React.FC = () => {
           )}
         </div>
 
-        {hasEmployees === 'Yes, I have employees' && (
+        {hasEmployees === 'Yes' && (
           <div>
             <label htmlFor="employeeCount" className="block text-white font-light mb-3 text-lg" style={{ fontWeight: 300 }}>
               How many employees? *
@@ -109,9 +117,9 @@ const Step2: React.FC = () => {
               className="w-full px-4 py-4 backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 text-white font-light" style={{ fontWeight: 300 }}
             >
               <option value="" className="bg-slate-800 text-white">Select employee count</option>
-                {employeeCounts.map((count) => (
+                {employeeCounts.map((count, index) => (
                   <option key={count} value={count} className="bg-slate-800 text-white">
-                    {count}
+                    {employeeCountLabels[index]}
                   </option>
                 ))}
             </select>
@@ -127,28 +135,19 @@ const Step2: React.FC = () => {
               <input
                 type="radio"
                 {...register('managesStock')}
-                value="Yes, significant stock"
+                value="Yes"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, significant stock</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, I manage stock/inventory</span>
             </label>
             <label className="flex items-center">
               <input
                 type="radio"
                 {...register('managesStock')}
-                value="Yes, minimal stock"
+                value="No"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, minimal stock</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                {...register('managesStock')}
-                value="No stock"
-                className="mr-3 text-accent focus:ring-accent"
-              />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>No stock</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No, I don't manage stock</span>
             </label>
           </div>
           {errors.managesStock && (
@@ -165,19 +164,10 @@ const Step2: React.FC = () => {
               <input
                 type="radio"
                 {...register('dealsForeignCurrency')}
-                value="Yes, regularly"
+                value="Yes"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, regularly</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                {...register('dealsForeignCurrency')}
-                value="Yes, occasionally"
-                className="mr-3 text-accent focus:ring-accent"
-              />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, occasionally</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>Yes, I deal in foreign currency</span>
             </label>
             <label className="flex items-center">
               <input
@@ -186,7 +176,7 @@ const Step2: React.FC = () => {
                 value="No"
                 className="mr-3 text-accent focus:ring-accent"
               />
-              <span className="text-white font-light" style={{ fontWeight: 300 }}>No</span>
+              <span className="text-white font-light" style={{ fontWeight: 300 }}>No, I don't deal in foreign currency</span>
             </label>
           </div>
           {errors.dealsForeignCurrency && (

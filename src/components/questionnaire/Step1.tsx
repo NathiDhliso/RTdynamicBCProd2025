@@ -58,13 +58,24 @@ const Step1: React.FC = () => {
   ];
 
   const industries = [
+    'Accounting & Finance',
+    'Agriculture & Farming',
+    'Automotive',
+    'Construction & Real Estate',
+    'Consulting & Professional Services',
+    'Education & Training',
+    'Energy & Utilities',
+    'Entertainment & Media',
+    'Food & Beverage',
+    'Healthcare & Medical',
+    'Hospitality & Tourism',
+    'Information Technology',
+    'Legal Services',
     'Manufacturing',
-    'Retail/Wholesale',
-    'Professional Services',
-    'Technology',
-    'Healthcare',
-    'Construction',
-    'Agriculture',
+    'Marketing & Advertising',
+    'Non-Profit',
+    'Retail & E-commerce',
+    'Transportation & Logistics',
     'Other'
   ];
 
