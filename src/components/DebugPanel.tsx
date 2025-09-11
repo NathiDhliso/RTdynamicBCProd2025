@@ -32,8 +32,10 @@ interface DebugInfo {
 
 const DebugPanel: React.FC = () => {
   // Sanitize API URL to prevent mixed content errors
-  const rawApiUrl = import.meta.env.VITE_API_URL || 
-    (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
+  const rawApiUrl =
+  import.meta.env.DEV
+    ? (import.meta.env.VITE_API_URL || 'http://localhost:3001')
+    : (import.meta.env.VITE_API_URL || '');
   const sanitizedApiUrl = (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawApiUrl.startsWith('http://'))
     ? rawApiUrl.replace('http://', 'https://')
     : rawApiUrl;

@@ -47,8 +47,13 @@ const ContactPage: React.FC = () => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     try {
-      const rawApi = import.meta.env.VITE_API_URL ||
-    (import.meta.env.DEV ? 'http://localhost:3001' : 'https://rtdbc-production.eba-pz5m2ibp.us-east-1.elasticbeanstalk.com');
+      const rawApi = (() => {
+  const url = import.meta.env.VITE_API_URL;
+  if (!import.meta.env.DEV && (!url || String(url).trim() === '')) {
+    throw new Error('API base URL is not configured. Please set VITE_API_URL in your hosting environment.');
+  }
+  return url || 'http://localhost:3001';
+})();
   const API_BASE_URL = (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawApi.startsWith('http://'))
     ? rawApi.replace('http://', 'https://')
     : rawApi;

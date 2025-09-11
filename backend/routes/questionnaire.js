@@ -253,4 +253,13 @@ router.get('/health', (req, res) => {
   });
 });
 
+// OPTIONS /api/questionnaire - Handle preflight requests
+router.options('/', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(200).end();
+});
+
 export default router;
