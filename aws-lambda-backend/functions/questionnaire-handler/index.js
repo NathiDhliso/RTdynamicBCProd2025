@@ -572,11 +572,14 @@ export const handler = async (event) => {
       requestId: event.requestContext?.requestId || ''
     };
     
-    // Send emails asynchronously in background (non-blocking)
-    // Fire and forget - don't await this
-    sendQuestionnaireEmailsAsync(formData, metadata).catch(error => {
+    // Send emails before returning to ensure delivery in Lambda environment
+    try {
+      await sendQuestionnaireEmailsAsync(formData, metadata);
+      console.log('📤 Questionnaire emails processed before responding to client');
+    } catch (error) {
       console.error('❌ Background questionnaire email sending failed:', error.message);
-    });
+      // Do not fail the response to the client
+    }
     
     return response;
     
