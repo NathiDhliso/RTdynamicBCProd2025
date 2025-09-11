@@ -94,7 +94,7 @@ const ContactPage: React.FC = () => {
         setIsSubmitted(false);
       }, 5000);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error sending message:', error);
       
       // Show error animation
@@ -109,8 +109,8 @@ const ContactPage: React.FC = () => {
       // Provide specific error messages based on error type
       let errorMessage = 'Failed to send message. Please try again or contact us directly.';
 
-      const name = (error && typeof error === 'object' && 'name' in error) ? (error as any).name : '';
-      const message = (error && typeof error === 'object' && 'message' in error) ? String((error as any).message || '') : '';
+      const name = (error && typeof error === 'object' && error !== null && 'name' in error) ? String((error as { name: unknown }).name) : '';
+      const message = (error && typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message: unknown }).message || '') : '';
 
       if (name === 'TimeoutError' || name === 'AbortError' || message.toLowerCase().includes('aborted')) {
         errorMessage = 'Request timed out. Please check your internet connection and try again.';
