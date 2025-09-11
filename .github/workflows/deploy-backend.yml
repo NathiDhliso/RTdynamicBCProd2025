@@ -42,6 +42,11 @@ jobs:
           Procfile \
           -x "*.git*" "*.env*" "node_modules/*"
 
+    - name: List deployment package contents (debug)
+      run: |
+        echo "Listing backend-deploy.zip contents for verification:"
+        unzip -l backend-deploy.zip || true
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -49,14 +54,46 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Remove legacy staticfiles option (pre-deploy)
+    - name: Purge invalid EB staticfiles options (pre-deploy)
       run: |
-        echo "Attempting to remove legacy staticfiles mapping from environment..."
-        aws elasticbeanstalk update-environment \
+        set -e
+        echo "Auditing EB environment for invalid staticfiles options..."
+        echo "Current invalid options (if any):"
+        aws elasticbeanstalk describe-configuration-settings \
           --application-name rtdbc-backend \
           --environment-name rtdbc-production \
-          --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=/public || true
-        echo "If the option did not exist, this is a no-op."
+          --query 'ConfigurationSettings[0].OptionSettings[?Namespace==`aws:elasticbeanstalk:container:nodejs:staticfiles`]' \
+          --output json || true
+
+        echo "Finding OptionNames under aws:elasticbeanstalk:container:nodejs:staticfiles..."
+        OPTION_NAMES=$(aws elasticbeanstalk describe-configuration-settings \
+          --application-name rtdbc-backend \
+          --environment-name rtdbc-production \
+          --query 'ConfigurationSettings[0].OptionSettings[?Namespace==`aws:elasticbeanstalk:container:nodejs:staticfiles`].OptionName' \
+          --output text || true)
+
+        if [ -z "$OPTION_NAMES" ]; then
+          echo "No invalid staticfiles options found. Attempting to remove /public just in case..."
+          aws elasticbeanstalk update-environment \
+            --application-name rtdbc-backend \
+            --environment-name rtdbc-production \
+            --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=/public || true
+        else
+          echo "Will remove the following OptionNames: $OPTION_NAMES"
+          for NAME in $OPTION_NAMES; do
+            echo "Removing $NAME from invalid namespace..."
+            aws elasticbeanstalk update-environment \
+              --application-name rtdbc-backend \
+              --environment-name rtdbc-production \
+              --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=$NAME || true
+          done
+        fi
+        echo "Re-check after purge:"
+        aws elasticbeanstalk describe-configuration-settings \
+          --application-name rtdbc-backend \
+          --environment-name rtdbc-production \
+          --query 'ConfigurationSettings[0].OptionSettings[?Namespace==`aws:elasticbeanstalk:container:nodejs:staticfiles`]' \
+          --output json || true
 
     - name: Wait for EB environment to be Ready
       run: |
