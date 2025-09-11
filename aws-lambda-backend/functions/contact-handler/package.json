@@ -10,7 +10,9 @@
     "deploy": "aws lambda update-function-code --function-name rtdbc-contact-handler --zip-file fileb://contact-handler.zip"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.450.0"
+    "@aws-sdk/client-ses": "^3.450.0",
+    "xlsx": "^0.18.5",
+    "mimetext": "^3.0.27"
   },
   "keywords": [
     "aws-lambda",

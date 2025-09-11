@@ -1,6 +1,17 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { validateQuestionnaireForm } from './validation.js';
 import { calculateQuote } from './calculations.js';
+import { 
+  formatQuestionnaireDataForExcel, 
+  generateQuestionnaireExcel, 
+  generateWeeklyFilename,
+  createEmailAttachment,
+  appendToExistingExcel,
+  QUESTIONNAIRE_COLUMNS
+} from '../shared/excel-generator.js';
+import { sendEmailWithDataInBody } from '../shared/ses-email-helper.js';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Inline utility functions to avoid module path issues
 const corsHeaders = {
@@ -301,12 +312,30 @@ const sesClient = new SESClient({
 });
 
 // Async email sending function for questionnaire that doesn't block the response
-const sendQuestionnaireEmailsAsync = async (formData) => {
+const sendQuestionnaireEmailsAsync = async (formData, metadata = {}) => {
   try {
+    // Format data for Excel
+    const excelData = formatQuestionnaireDataForExcel(formData, {
+      ipAddress: metadata.sourceIp || '',
+      userAgent: metadata.userAgent || '',
+      source: 'Website Questionnaire'
+    });
+    
+    // Generate weekly filename and append to weekly file
+    const weeklyFilename = generateWeeklyFilename('questionnaire');
+    const weeklyFilePath = path.join('/tmp', weeklyFilename);
+    
+    try {
+      await appendToExistingExcel(weeklyFilePath, [excelData], 'Questionnaire Submissions', QUESTIONNAIRE_COLUMNS);
+      console.log(`📊 Data appended to weekly file: ${weeklyFilename}`);
+    } catch (weeklyError) {
+      console.error('⚠️ Failed to append to weekly file:', weeklyError.message);
+    }
+    
     // Create email template
     const emailTemplate = createQuestionnaireEmailTemplate(formData);
     
-    // Send email to business
+    // Send email to business with data included in body
     const recipientEmail = process.env.BUSINESS_EMAIL || 'contact@rtdynamicbc.co.za';
     
     const businessEmailParams = {
@@ -332,8 +361,8 @@ const sendQuestionnaireEmailsAsync = async (formData) => {
       }
     };
     
-    await sesClient.send(new SendEmailCommand(businessEmailParams));
-    console.log('✅ Business questionnaire notification email sent successfully');
+    await sendEmailWithDataInBody(sesClient, businessEmailParams, [excelData]);
+    console.log('✅ Business questionnaire notification email sent successfully with customer data included');
 
     // Send confirmation email to customer (optional)
     if (process.env.SEND_CONFIRMATION === 'true') {
@@ -536,9 +565,16 @@ export const handler = async (event) => {
       requestId: event.requestContext?.requestId
     }, corsHeaders);
     
+    // Prepare metadata for Excel generation
+    const metadata = {
+      sourceIp: event.requestContext?.identity?.sourceIp || '',
+      userAgent: event.headers?.['User-Agent'] || event.headers?.['user-agent'] || '',
+      requestId: event.requestContext?.requestId || ''
+    };
+    
     // Send emails asynchronously in background (non-blocking)
     // Fire and forget - don't await this
-    sendQuestionnaireEmailsAsync(formData).catch(error => {
+    sendQuestionnaireEmailsAsync(formData, metadata).catch(error => {
       console.error('❌ Background questionnaire email sending failed:', error.message);
     });
     
