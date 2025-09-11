@@ -122,4 +122,4 @@ If you need HTTPS for your backend API:
 ### General Issues
 - Ensure all environment variables are set
 - Check that AWS SES is configured for your email domain
-- Verify CORS settings allow your frontend domain
+- Verify CORS settings allow your frontend domain# Deployment trigger - permissions updated 2025-09-11 08:02:16
