@@ -15,10 +15,26 @@ const ContactPage: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [submissionData, setSubmissionData] = useState<{name: string, email: string} | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const formRef = useRef<HTMLFormElement>(null);
   const errorShakeRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+
+  // Check for existing submission on component mount
+  useEffect(() => {
+    const savedSubmission = localStorage.getItem('contact_submitted');
+    if (savedSubmission) {
+      try {
+        const data = JSON.parse(savedSubmission);
+        setIsSubmitted(true);
+        setSubmissionData(data);
+      } catch (error) {
+        console.error('Error parsing saved contact submission data:', error);
+        localStorage.removeItem('contact_submitted');
+      }
+    }
+  }, []);
   
   const {
     register,
@@ -86,13 +102,20 @@ const ContactPage: React.FC = () => {
       }
 
       console.log('✅ Message sent successfully:', result);
+      
+      // Save submission data to localStorage for persistent confirmation
+      const submissionInfo = {
+        name: data.name,
+        email: data.email,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('contact_submitted', JSON.stringify(submissionInfo));
+      
       setIsSubmitted(true);
+      setSubmissionData(submissionInfo);
       reset();
       
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
+      // Don't auto-reset the success message - let user refresh to start over
 
     } catch (error: unknown) {
       console.error('❌ Error sending message:', error);
@@ -275,13 +298,30 @@ const ContactPage: React.FC = () => {
                       ref={successRef}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="mb-8 p-6 backdrop-blur-xl bg-emerald-500/20 border border-emerald-400/30 rounded-2xl flex items-center"
+                      className="mb-8 p-6 backdrop-blur-xl bg-emerald-500/20 border border-emerald-400/30 rounded-2xl"
                     >
-                      <CheckCircle className="h-5 w-5 text-emerald-300 mr-3" strokeWidth={1.5} />
-                      <div>
-                        <p className="text-emerald-200 font-medium" style={{ fontWeight: 500 }}>Message sent successfully!</p>
-                        <p className="text-emerald-300 text-sm font-light" style={{ fontWeight: 300 }}>We'll get back to you within 24 hours.</p>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-emerald-300 mr-3 flex-shrink-0" strokeWidth={1.5} />
+                          <div>
+                            <p className="text-emerald-200 font-medium" style={{ fontWeight: 500 }}>Message sent successfully!</p>
+                            <p className="text-emerald-300 text-sm font-light" style={{ fontWeight: 300 }}>We'll get back to you at {submissionData?.email || 'your email'} within 24 hours.</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem('contact_submitted');
+                            setIsSubmitted(false);
+                            setSubmissionData(null);
+                          }}
+                          className="text-emerald-400 hover:text-emerald-300 text-xs underline ml-4 flex-shrink-0"
+                        >
+                          Clear
+                        </button>
                       </div>
+                      <p className="text-emerald-400/70 text-xs mt-3 font-light">
+                        This confirmation will remain until you refresh the page to prevent duplicate submissions.
+                      </p>
                     </motion.div>
                   )}
 

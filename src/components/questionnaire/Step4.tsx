@@ -24,8 +24,24 @@ const Step4: React.FC = () => {
   const { formData, updateFormData, reset, prevStep } = useQuestionnaireStore();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [submissionData, setSubmissionData] = React.useState<{contactName: string, email: string} | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const successIconRef = useRef<HTMLDivElement>(null);
+
+  // Check for existing submission on component mount
+  React.useEffect(() => {
+    const savedSubmission = localStorage.getItem('questionnaire_submitted');
+    if (savedSubmission) {
+      try {
+        const data = JSON.parse(savedSubmission);
+        setIsSubmitted(true);
+        setSubmissionData(data);
+      } catch (error) {
+        console.error('Error parsing saved submission data:', error);
+        localStorage.removeItem('questionnaire_submitted');
+      }
+    }
+  }, []);
   
   const {
     register,
@@ -102,12 +118,19 @@ const Step4: React.FC = () => {
       }
 
       console.log('✅ Questionnaire submitted successfully:', result);
-      setIsSubmitted(true);
       
-      // Reset form after a delay to allow user to read the message
-      setTimeout(() => {
-        reset();
-      }, 8000);
+      // Save submission data to localStorage for persistent confirmation
+      const submissionInfo = {
+        contactName: data.contactName,
+        email: data.email,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('questionnaire_submitted', JSON.stringify(submissionInfo));
+      
+      setIsSubmitted(true);
+      setSubmissionData(submissionInfo);
+      
+      // Don't auto-reset the form - let user refresh to start over
 
     } catch (error: unknown) {
       console.error('❌ Error submitting questionnaire:', error);
@@ -153,7 +176,17 @@ const Step4: React.FC = () => {
     'Other'
   ];
 
+  const handleStartOver = () => {
+    localStorage.removeItem('questionnaire_submitted');
+    setIsSubmitted(false);
+    setSubmissionData(null);
+    reset();
+  };
+
   if (isSubmitted) {
+    const displayName = submissionData?.contactName || formData.contactName || 'there';
+    const displayEmail = submissionData?.email || formData.email || '';
+    
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -164,14 +197,25 @@ const Step4: React.FC = () => {
           <CheckCircle className="h-16 w-16 text-emerald-400 mb-6" />
         </div>
         <h2 className="text-3xl font-extralight text-white mb-4">
-          Thank You, {formData.contactName}!
+          Thank You, {displayName}!
         </h2>
         <p className="text-slate-400 mb-4 max-w-md mx-auto leading-relaxed">
           Your Business Health Check has been submitted. We're analyzing your responses to prepare your customized recommendations.
         </p>
-        <p className="text-sm text-slate-500">
-          We will contact you at <span className="font-medium text-slate-400">{formData.email}</span> within 24 hours to discuss the next steps.
+        <p className="text-sm text-slate-500 mb-8">
+          We will contact you at <span className="font-medium text-slate-400">{displayEmail}</span> within 24 hours to discuss the next steps.
         </p>
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <p className="text-xs text-slate-600">
+            This confirmation will remain until you refresh the page to prevent duplicate submissions.
+          </p>
+          <button
+            onClick={handleStartOver}
+            className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/40 text-slate-300 hover:text-white font-light py-2 px-4 rounded-lg hover:bg-slate-700/40 transition-all duration-300 text-sm"
+          >
+            Start New Submission
+          </button>
+        </div>
       </motion.div>
     );
   }
