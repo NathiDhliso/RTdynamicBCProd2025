@@ -1,0 +1,10 @@
+{
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"companyName\":\"Test Email Fix Company\",\"entityType\":\"Private Company (Pty Ltd)\",\"industry\":\"Information Technology\",\"annualRevenue\":\"R1,000,001 - R5,000,000\",\"hasEmployees\":\"Yes\",\"employeeCount\":\"6-20\",\"managesStock\":\"No\",\"dealsForeignCurrency\":\"No\",\"taxComplexity\":\"Simple\",\"auditRequirements\":\"Not Required\",\"regulatoryReporting\":\"Standard\",\"primaryGoal\":\"Improve Financial Management\",\"businessChallenges\":\"Testing email functionality after permissions fix\",\"contactName\":\"Test User\",\"email\":\"test@example.com\",\"phoneNumber\":\"+27 11 123 4567\"}",
+  "requestContext": {
+    "requestId": "test-email-fix-001"
+  }
+}

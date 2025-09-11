@@ -20,21 +20,19 @@ const usePrefersReducedMotion = () => {
   return prefersReducedMotion;
 };
 
-// Custom hook for device detection
+// Simplified device detection
 const useDeviceDetection = () => {
   const [deviceInfo, setDeviceInfo] = useState({
     isMobile: false,
-    isTouch: false,
-    isLowPower: false
+    isTouch: false
   });
 
   useEffect(() => {
     const checkDevice = () => {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+      const isMobile = window.innerWidth < 768;
       const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const isLowPower = navigator.connection?.saveData || navigator.connection?.effectiveType === '2g' || navigator.connection?.effectiveType === 'slow-2g';
       
-      setDeviceInfo({ isMobile, isTouch, isLowPower });
+      setDeviceInfo({ isMobile, isTouch });
     };
 
     checkDevice();
@@ -58,196 +56,79 @@ const FounderCard = ({
   twitter,
   email,
 }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [touchStartY, setTouchStartY] = useState(0);
-  const [touchStartTime, setTouchStartTime] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const { isMobile, isTouch, isLowPower } = useDeviceDetection();
+  const { isMobile, isTouch } = useDeviceDetection();
 
-  // Scroll detection to prevent flip during scrolling
-  useEffect(() => {
-    let scrollTimeout;
-    const handleScroll = () => {
-      setIsScrolling(true);
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false);
-      }, 150);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeout);
-    };
-  }, []);
-
-  const handleInteraction = (e) => {
-    // Prevent flip on link clicks
+  const handleCardClick = (e) => {
+    // Prevent toggle on link clicks
     const target = e.target;
     if (target.closest('a') || target.closest('button')) {
       e.stopPropagation();
       return;
     }
-    setIsFlipped(!isFlipped);
+    setShowDetails(!showDetails);
   };
 
-  // Enhanced mobile compatibility check - allow flip on mobile but simplify animations if needed
-  const shouldSimplifyAnimations = prefersReducedMotion || isLowPower || 
-    (isMobile && (!CSS.supports('transform-style', 'preserve-3d') || 
-     !CSS.supports('backface-visibility', 'hidden')));
+  const handleToggleDetails = () => {
+    setShowDetails(!showDetails);
+  };
   
-  // Enable flip on mobile even with simplified animations
-  const enableFlip = !prefersReducedMotion && !isLowPower;
-
-  // Enhanced touch handling for mobile flip functionality
-  const handleTouchStart = (e) => {
-    if (isScrolling) return;
-    
-    const touch = e.touches[0];
-    setTouchStartY(touch.clientY);
-    setTouchStartTime(Date.now());
-  };
-
-  const handleTouchEnd = (e) => {
-    if (isScrolling) return;
-    
-    const touch = e.changedTouches[0];
-    const touchEndY = touch.clientY;
-    const touchDuration = Date.now() - touchStartTime;
-    const touchDistance = Math.abs(touchEndY - touchStartY);
-    
-    // Only flip if it's a tap (short duration, minimal movement)
-    const isTap = touchDuration < 300 && touchDistance < 10;
-    
-    if (isTap && !e.target.closest('a') && !e.target.closest('button')) {
-      e.preventDefault();
-      setIsFlipped(!isFlipped);
-    }
-  };
-
-  const handleClick = (e) => {
-    if (isScrolling || isTouch) return;
-    handleInteraction(e);
-  };
-
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div 
-        className={`founder-card-container h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative ${
-          enableFlip ? 'cursor-pointer' : ''
-        } ${
-          shouldSimplifyAnimations ? 'mobile-fallback' : 'mobile-optimized'
-        }`}
-        style={{ 
-          perspective: shouldSimplifyAnimations ? 'none' : '1500px',
-          WebkitPerspective: shouldSimplifyAnimations ? 'none' : '1500px'
-        }}
-        onClick={enableFlip && !isTouch ? handleClick : undefined}
-        onTouchStart={enableFlip && isTouch ? handleTouchStart : undefined}
-        onTouchEnd={enableFlip && isTouch ? handleTouchEnd : undefined}
+        className="founder-card-container h-[550px] sm:h-[600px] md:h-[550px] mb-4 sm:mb-6 md:mb-0 relative cursor-pointer"
+        onClick={handleCardClick}
         onMouseEnter={() => !isTouch && setIsHovered(true)}
         onMouseLeave={() => !isTouch && setIsHovered(false)}
       >
-        {shouldSimplifyAnimations && !enableFlip ? (
-          // Static version for devices that can't handle any animations
-          <div className="w-full h-full">
-            <SimplifiedFrontCard 
-              name={name}
-              title={title}
-              expertise={expertise}
-              image={image}
-              linkedin={linkedin}
-              twitter={twitter}
-              email={email}
-              onFlip={() => {}}
-            />
-          </div>
-        ) : shouldSimplifyAnimations && enableFlip ? (
-          // Simplified flip version for mobile devices
-          <div className="w-full h-full">
-            {!isFlipped ? (
-              <SimplifiedFrontCard 
-                name={name}
-                title={title}
-                expertise={expertise}
-                image={image}
-                linkedin={linkedin}
-                twitter={twitter}
-                email={email}
-                onFlip={() => setIsFlipped(true)}
-              />
-            ) : (
-              <SimplifiedBackCard
-                name={name}
-                title={title}
-                experience={experience}
-                achievements={achievements}
-                onFlip={() => setIsFlipped(false)}
-              />
-            )}
-          </div>
-        ) : (
-          // Full 3D animation version
-          <div
-            className="relative w-full h-full transition-transform duration-700 ease-in-out"
-            style={{ 
-              transformStyle: 'preserve-3d',
-              WebkitTransformStyle: 'preserve-3d',
-              transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-              WebkitTransform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-            }}
-          >
-            {/* Front of Card */}
-            <div
-              className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
-              style={{ 
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
-              }}
-            >
-              <FrontCard
-                name={name}
-                title={title}
-                expertise={expertise}
-                image={image}
-                linkedin={linkedin}
-                twitter={twitter}
-                email={email}
-                isHovered={isHovered}
-                isMobile={isMobile}
-              />
-            </div>
-
-            {/* Back of Card */}
-            <div
-              className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
-              style={{ 
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)',
-                WebkitTransform: 'rotateY(180deg)'
-              }}
-            >
-              <BackCard
-                name={name}
-                title={title}
-                experience={experience}
-                achievements={achievements}
-                isMobile={isMobile}
-              />
-            </div>
-          </div>
-        )}
+        {/* Front Card */}
+        <div 
+          className={`absolute inset-0 transition-all duration-500 ease-in-out rounded-xl shadow-2xl overflow-hidden ${
+            showDetails 
+              ? 'opacity-0 pointer-events-none transform translate-y-4' 
+              : 'opacity-100 transform translate-y-0'
+          }`}
+        >
+          <FrontCard 
+            name={name}
+            title={title}
+            expertise={expertise}
+            image={image}
+            linkedin={linkedin}
+            twitter={twitter}
+            email={email}
+            isHovered={isHovered}
+            isMobile={isMobile}
+            onToggle={handleToggleDetails}
+          />
+        </div>
+        
+        {/* Back Card */}
+        <div 
+          className={`absolute inset-0 transition-all duration-500 ease-in-out rounded-xl shadow-2xl overflow-hidden ${
+            showDetails 
+              ? 'opacity-100 transform translate-y-0' 
+              : 'opacity-0 pointer-events-none transform -translate-y-4'
+          }`}
+        >
+          <BackCard 
+            name={name}
+            title={title}
+            experience={experience}
+            achievements={achievements}
+            isMobile={isMobile}
+            onToggle={handleToggleDetails}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
 // Front Card Component
-const FrontCard = ({ name, title, expertise, image, linkedin, twitter, email, isHovered, isMobile }) => (
+const FrontCard = ({ name, title, expertise, image, linkedin, twitter, email, isHovered, isMobile, onToggle }) => (
   <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white relative">
     {/* Optimized Background Pattern */}
     <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -292,7 +173,7 @@ const FrontCard = ({ name, title, expertise, image, linkedin, twitter, email, is
             {expertise.slice(0, 6).map((skill, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md rounded-lg p-2.5 text-center shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 transform-gpu"
+                className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md rounded-lg p-2.5 text-center shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
               >
                 <span className="text-xs font-medium text-shadow-sm">{skill}</span>
               </div>
@@ -335,16 +216,22 @@ const FrontCard = ({ name, title, expertise, image, linkedin, twitter, email, is
             </a>
           )}
         </div>
-        <span className={`text-white/60 text-xs font-medium ${!isMobile ? 'animate-pulse' : ''}`}>
-          Click to view details →
-        </span>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          className="text-white/60 hover:text-white text-xs font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-300"
+        >
+          View Details →
+        </button>
       </div>
     </div>
   </div>
 );
 
 // Back Card Component
-const BackCard = ({ name, title, experience, achievements, isMobile }) => (
+const BackCard = ({ name, title, experience, achievements, isMobile, onToggle }) => (
   <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
     {/* Optimized Grid Pattern */}
     {!isMobile && (
@@ -396,131 +283,25 @@ const BackCard = ({ name, title, experience, achievements, isMobile }) => (
         </div>
         
         <div className="text-center pt-3 flex-shrink-0 border-t border-gray-700/50 mt-3">
-          <span className="text-gray-400 text-xs font-medium">← Click to flip back</span>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+            className="text-gray-400 hover:text-white text-xs font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-300"
+          >
+            ← Back to Profile
+          </button>
         </div>
       </div>
     </div>
   </div>
 );
 
-// Simplified Front Card for fallback
-const SimplifiedFrontCard = ({ name, title, expertise, image, linkedin, twitter, email, onFlip }) => (
-  <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white rounded-xl shadow-2xl p-6">
-    <div className="h-full flex flex-col justify-between">
-      <div>
-        <div className="text-center mb-6">
-          <div className="w-24 h-24 bg-gradient-to-br from-emerald-400/30 to-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-            <img 
-              src={image} 
-              alt={name} 
-              className="w-full h-full object-cover rounded-full"
-              loading="lazy"
-            />
-          </div>
-          <h3 className="font-bold text-2xl mb-2">{name}</h3>
-          <p className="text-white/90 text-sm mb-3">{title}</p>
-          <div className="bg-emerald-500/20 text-white px-4 py-1.5 rounded-full text-xs inline-block font-semibold">
-            CA(SA) • SAICA Member
-          </div>
-        </div>
-        
-        <div>
-          <h4 className="font-semibold text-lg mb-4 text-center text-emerald-300">Core Expertise</h4>
-          <div className="grid grid-cols-2 gap-2">
-            {expertise.slice(0, 6).map((skill, index) => (
-              <div key={index} className="bg-white/10 rounded-lg p-2 text-center">
-                <span className="text-xs font-medium">{skill}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <div className="text-center mt-4">
-        <div className="flex justify-center space-x-4 mb-3">
-          {linkedin && (
-            <a href={linkedin} target="_blank" rel="noopener noreferrer" className="text-white/70">
-              <Linkedin className="h-6 w-6" />
-            </a>
-          )}
-          {twitter && (
-            <a href={twitter} target="_blank" rel="noopener noreferrer" className="text-white/70">
-              <Twitter className="h-6 w-6" />
-            </a>
-          )}
-          {email && (
-            <a href={`mailto:${email}`} className="text-white/70">
-              <Mail className="h-6 w-6" />
-            </a>
-          )}
-        </div>
-        <button 
-          onClick={onFlip}
-          className="text-white/60 text-xs font-medium bg-white/10 px-4 py-2 rounded-lg"
-        >
-          View Details →
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
-// Simplified Back Card for fallback
-const SimplifiedBackCard = ({ name, title, experience, achievements, onFlip }) => (
-  <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white rounded-xl shadow-2xl p-5">
-    <div className="h-full flex flex-col">
-      <div className="text-center mb-4">
-        <h3 className="font-bold text-base mb-1">{name}</h3>
-        <p className="text-gray-300 text-xs mb-1">{title}</p>
-        <p className="text-emerald-400 text-xs font-semibold">CA(SA), SAICA Member</p>
-      </div>
-      
-      <div className="flex-1 space-y-3 overflow-y-auto">
-        <div className="bg-gray-800/50 rounded-lg p-3">
-          <h4 className="font-semibold text-sm text-blue-400 mb-2">Professional Summary</h4>
-          <p className="text-xs text-gray-300 leading-relaxed">{experience}</p>
-        </div>
-        
-        <div className="bg-gray-800/50 rounded-lg p-3">
-          <h4 className="font-semibold text-sm text-amber-400 mb-2">Key Highlights</h4>
-          <ul className="space-y-1">
-            {achievements.slice(0, 3).map((achievement, index) => (
-              <li key={index} className="text-xs text-gray-300 leading-relaxed">
-                • {achievement}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      
-      <div className="text-center pt-3 border-t border-gray-700/50 mt-3">
-        <button 
-          onClick={onFlip}
-          className="text-gray-400 text-xs font-medium bg-white/10 px-4 py-2 rounded-lg"
-        >
-          ← Back to Profile
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
-// Add CSS for animations
+// Add CSS for mobile-friendly animations
 const styles = `
-  @keyframes spin-slow {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-  
-  .animate-spin-slow {
-    animation: spin-slow 20s linear infinite;
-  }
-  
-  .transform-gpu {
-    transform: translateZ(0);
-    will-change: transform;
-  }
-  
   .text-shadow-sm {
     text-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
@@ -550,49 +331,25 @@ const styles = `
     background: rgba(16, 185, 129, 0.5);
     border-radius: 2px;
   }
-  
-  @media (hover: none) and (pointer: coarse) {
-    .hover:scale-105:hover {
-      transform: scale(1);
-    }
-    .hover:scale-110:hover {
-      transform: scale(1);
-    }
-    
-    /* Improve touch targets for mobile */
-    .founder-card-container {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    
-    /* Disable 3D transforms on problematic mobile browsers */
-    .mobile-fallback {
-      transform-style: flat !important;
-      backface-visibility: visible !important;
-      perspective: none !important;
-    }
-    
-    /* Optimize animations for mobile performance */
-    .mobile-optimized {
-      will-change: transform, opacity;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-    }
+
+  .founder-card-container {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
-  /* Additional mobile-specific optimizations */
-  @media screen and (max-width: 768px) {
-    .animate-pulse {
-      animation: none;
+  /* Ensure smooth transitions on all devices */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Disable problematic hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .hover\:scale-105:hover {
+      transform: scale(1);
     }
-    
-    .animate-spin-slow {
-      animation: none;
-    }
-    
-    /* Reduce motion for better mobile performance */
-    .transition-transform {
-      transition-duration: 0.2s;
+    .hover\:scale-110:hover {
+      transform: scale(1);
     }
   }
 `;

@@ -102,10 +102,13 @@ Resources:
             Path: /api/questionnaire
             Method: options
       Policies:
-        - SESCrudPolicy:
-            IdentityName: '*'
         - Version: '2012-10-17'
           Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: '*'
             - Effect: Allow
               Action:
                 - logs:CreateLogGroup
