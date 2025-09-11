@@ -46,7 +46,7 @@ const Step3: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center mb-4">
           <Shield className="h-8 w-8 text-accent mr-3" />
-          <h2 className="text-3xl font-serif font-bold text-primary">
+          <h2 className="text-3xl font-serif font-bold text-white">
             Compliance Requirements
           </h2>
         </div>

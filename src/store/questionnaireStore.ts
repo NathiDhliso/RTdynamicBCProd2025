@@ -71,6 +71,6 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
   
   shouldShowComplianceStep: () => {
     const { formData } = get();
-    return formData.entityType === 'Private Limited (Pty) Ltd';
+    return formData.entityType === 'Private Company (Pty Ltd)';
   },
 }));

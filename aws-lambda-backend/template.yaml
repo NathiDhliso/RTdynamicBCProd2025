@@ -1,0 +1,210 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'RT Dynamic Business Consulting - Serverless Backend with SAM'
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        SES_REGION: !Ref AWS::Region
+        BUSINESS_EMAIL: !Ref BusinessEmail
+        FROM_EMAIL: !Ref FromEmail
+        SEND_CONFIRMATION: !Ref SendConfirmation
+        NODE_ENV: !Ref Environment
+    Tags:
+      Application: RTDynamicBC
+      Environment: !Ref Environment
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Environment name
+  
+  BusinessEmail:
+    Type: String
+    Default: contact@rtdynamicbc.co.za
+    Description: Business email address for receiving form submissions
+  
+  FromEmail:
+    Type: String
+    Default: contact@rtdynamicbc.co.za
+    Description: From email address for SES
+  
+  SendConfirmation:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Whether to send confirmation emails to customers
+
+Resources:
+  # Contact Handler Lambda Function
+  ContactHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'rtdbc-contact-handler-${Environment}'
+      CodeUri: functions/contact-handler/
+      Handler: index.handler
+      Description: 'Handles contact form submissions'
+      Events:
+        ContactApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RTDynamicApi
+            Path: /api/contact
+            Method: post
+        ContactOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RTDynamicApi
+            Path: /api/contact
+            Method: options
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # Questionnaire Handler Lambda Function
+  QuestionnaireHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'rtdbc-questionnaire-handler-${Environment}'
+      CodeUri: functions/questionnaire-handler/
+      Handler: index.handler
+      Description: 'Handles business health check questionnaire submissions with quote calculations'
+      MemorySize: 512
+      Timeout: 45
+      Events:
+        QuestionnaireApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RTDynamicApi
+            Path: /api/questionnaire
+            Method: post
+        QuestionnaireOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RTDynamicApi
+            Path: /api/questionnaire
+            Method: options
+      Policies:
+        - SESCrudPolicy:
+            IdentityName: '*'
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # API Gateway
+  RTDynamicApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'rtdbc-api-${Environment}'
+      StageName: !Ref Environment
+      Description: 'RT Dynamic Business Consulting API'
+      EndpointConfiguration:
+        Type: REGIONAL
+      Cors:
+        AllowMethods: "'POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+      # Throttling is configured at the stage level in SAM
+      # Simplified configuration for SAM compatibility
+
+  # CloudWatch Log Groups
+  ContactHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/rtdbc-contact-handler-${Environment}'
+      RetentionInDays: 14
+
+  QuestionnaireHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/rtdbc-questionnaire-handler-${Environment}'
+      RetentionInDays: 14
+
+  # CloudWatch Alarms
+  ContactHandlerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'rtdbc-contact-handler-errors-${Environment}'
+      AlarmDescription: 'Contact handler function errors'
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ContactHandlerFunction
+      TreatMissingData: notBreaching
+
+  QuestionnaireHandlerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'rtdbc-questionnaire-handler-errors-${Environment}'
+      AlarmDescription: 'Questionnaire handler function errors'
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref QuestionnaireHandlerFunction
+      TreatMissingData: notBreaching
+
+Outputs:
+  ApiGatewayUrl:
+    Description: 'API Gateway endpoint URL'
+    Value: !Sub 'https://${RTDynamicApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiUrl'
+
+  ContactEndpoint:
+    Description: 'Contact form endpoint'
+    Value: !Sub 'https://${RTDynamicApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/contact'
+    Export:
+      Name: !Sub '${AWS::StackName}-ContactEndpoint'
+
+  QuestionnaireEndpoint:
+    Description: 'Questionnaire endpoint'
+    Value: !Sub 'https://${RTDynamicApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/questionnaire'
+    Export:
+      Name: !Sub '${AWS::StackName}-QuestionnaireEndpoint'
+
+  ContactHandlerFunctionName:
+    Description: 'Contact handler Lambda function name'
+    Value: !Ref ContactHandlerFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-ContactHandlerFunction'
+
+  QuestionnaireHandlerFunctionName:
+    Description: 'Questionnaire handler Lambda function name'
+    Value: !Ref QuestionnaireHandlerFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-QuestionnaireHandlerFunction'

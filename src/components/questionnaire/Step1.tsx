@@ -38,20 +38,23 @@ const Step1: React.FC = () => {
   };
 
   const entityTypes = [
-    'Sole Proprietorship',
+    'Sole Proprietor',
     'Partnership',
-    'Private Limited (Pty) Ltd',
+    'Close Corporation (CC)',
+    'Private Company (Pty Ltd)',
     'Public Company',
-    'Non-Profit Organization'
+    'Trust',
+    'Non-Profit Organization (NPO)',
+    'Other'
   ];
 
   const revenueRanges = [
-    'Under R100,000',
-    'R100,000 - R500,000',
-    'R500,000 - R2 million',
-    'R2 million - R10 million',
-    'R10 million - R50 million',
-    'Over R50 million'
+    'R0 - R100,000',
+    'R100,001 - R500,000',
+    'R500,001 - R1,000,000',
+    'R1,000,001 - R5,000,000',
+    'R5,000,001 - R20,000,000',
+    'Over R20,000,000'
   ];
 
   const industries = [

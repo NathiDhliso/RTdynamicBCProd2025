@@ -50,15 +50,26 @@ const DebugPanel: React.FC = () => {
   const testConnectivity = async () => {
     const apiUrl = debugInfo.apiUrl;
     
-    // Test health endpoint
+    // Test contact endpoint (Lambda)
     try {
       setDebugInfo(prev => ({ ...prev, healthStatus: 'loading' }));
-      const healthResponse = await fetch(`${apiUrl}/health`, {
-        method: 'GET',
+      const contactResponse = await fetch(`${apiUrl}/api/contact`, {
+        method: 'OPTIONS', // CORS preflight test
         headers: { 'Content-Type': 'application/json' }
       });
-      const healthData = await healthResponse.json();
-      setDebugInfo(prev => ({ ...prev, healthStatus: 'success', healthData }));
+      
+      const healthData = {
+        status: contactResponse.ok ? 'healthy' : 'error',
+        message: contactResponse.ok ? 'Lambda contact endpoint accessible' : 'Contact endpoint failed',
+        timestamp: new Date().toISOString(),
+        statusCode: contactResponse.status
+      };
+      
+      setDebugInfo(prev => ({ 
+        ...prev, 
+        healthStatus: contactResponse.ok ? 'success' : 'error', 
+        healthData 
+      }));
     } catch (error) {
       setDebugInfo(prev => ({ 
         ...prev, 
@@ -67,15 +78,32 @@ const DebugPanel: React.FC = () => {
       }));
     }
 
-    // Test environment endpoint
+    // Test questionnaire endpoint (Lambda)
     try {
       setDebugInfo(prev => ({ ...prev, envStatus: 'loading' }));
-      const envResponse = await fetch(`${apiUrl}/debug/env`, {
-        method: 'GET',
+      const questionnaireResponse = await fetch(`${apiUrl}/api/questionnaire`, {
+        method: 'OPTIONS', // CORS preflight test
         headers: { 'Content-Type': 'application/json' }
       });
-      const envData = await envResponse.json();
-      setDebugInfo(prev => ({ ...prev, envStatus: 'success', envData }));
+      
+      const envData = {
+        backend: 'AWS Lambda + SAM',
+        architecture: 'Serverless',
+        contactEndpoint: `${apiUrl}/api/contact`,
+        questionnaireEndpoint: `${apiUrl}/api/questionnaire`,
+        contactStatus: 'Available',
+        questionnaireStatus: questionnaireResponse.ok ? 'Available' : 'Error',
+        emailService: 'AWS SES',
+        timestamp: new Date().toISOString(),
+        region: 'us-east-1',
+        environment: 'production'
+      };
+      
+      setDebugInfo(prev => ({ 
+        ...prev, 
+        envStatus: questionnaireResponse.ok ? 'success' : 'error', 
+        envData 
+      }));
     } catch (error) {
       setDebugInfo(prev => ({ 
         ...prev, 
@@ -125,14 +153,14 @@ const DebugPanel: React.FC = () => {
         
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span>Health Check:</span>
+            <span>Contact API:</span>
             {debugInfo.healthStatus === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
             {debugInfo.healthStatus === 'success' && <CheckCircle className="w-4 h-4 text-green-600" />}
             {debugInfo.healthStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-600" />}
           </div>
           
           <div className="flex items-center gap-2">
-            <span>Environment:</span>
+            <span>Questionnaire API:</span>
             {debugInfo.envStatus === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
             {debugInfo.envStatus === 'success' && <CheckCircle className="w-4 h-4 text-green-600" />}
             {debugInfo.envStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-600" />}
@@ -147,7 +175,7 @@ const DebugPanel: React.FC = () => {
         
         {debugInfo.envData && (
           <details className="text-xs">
-            <summary className="cursor-pointer font-medium">Environment Details</summary>
+            <summary className="cursor-pointer font-medium">Lambda Backend Details</summary>
             <pre className="bg-gray-100 p-2 rounded mt-1 overflow-auto max-h-32">
               {JSON.stringify(debugInfo.envData, null, 2)}
             </pre>

@@ -1,0 +1,513 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'RT Dynamic Business Consulting - Serverless Backend Infrastructure'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Environment name
+  
+  BusinessEmail:
+    Type: String
+    Default: contact@rtdynamicbc.co.za
+    Description: Business email address for receiving form submissions
+  
+  FromEmail:
+    Type: String
+    Default: noreply@rtdynamicbc.co.za
+    Description: From email address for SES
+  
+  SendConfirmation:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Whether to send confirmation emails to customers
+  
+  CorsOrigins:
+    Type: CommaDelimitedList
+    Default: 'https://www.rtdynamicbc.co.za,https://rtdynamicbc.co.za,https://d2js6qnot116a8.cloudfront.net'
+    Description: Allowed CORS origins
+
+Resources:
+  # IAM Role for Lambda Functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'rtdbc-lambda-execution-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SESEmailPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # Contact Handler Lambda Function
+  ContactHandlerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'rtdbc-contact-handler-${Environment}'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          // Placeholder code - will be replaced during deployment
+          exports.handler = async (event) => {
+            return {
+              statusCode: 200,
+              body: JSON.stringify({ message: 'Contact handler placeholder' })
+            };
+          };
+      Environment:
+        Variables:
+          SES_REGION: !Ref AWS::Region
+          BUSINESS_EMAIL: !Ref BusinessEmail
+          FROM_EMAIL: !Ref FromEmail
+          SEND_CONFIRMATION: !Ref SendConfirmation
+          NODE_ENV: !Ref Environment
+      MemorySize: 256
+      Timeout: 30
+      Description: 'Handles contact form submissions'
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: RTDynamicBC
+        - Key: Function
+          Value: ContactHandler
+
+  # Questionnaire Handler Lambda Function
+  QuestionnaireHandlerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'rtdbc-questionnaire-handler-${Environment}'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          // Placeholder code - will be replaced during deployment
+          exports.handler = async (event) => {
+            return {
+              statusCode: 200,
+              body: JSON.stringify({ message: 'Questionnaire handler placeholder' })
+            };
+          };
+      Environment:
+        Variables:
+          SES_REGION: !Ref AWS::Region
+          BUSINESS_EMAIL: !Ref BusinessEmail
+          FROM_EMAIL: !Ref FromEmail
+          SEND_CONFIRMATION: !Ref SendConfirmation
+          NODE_ENV: !Ref Environment
+      MemorySize: 512
+      Timeout: 45
+      Description: 'Handles business health check questionnaire submissions with quote calculations'
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: RTDynamicBC
+        - Key: Function
+          Value: QuestionnaireHandler
+
+  # API Gateway REST API
+  RTDynamicAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'rtdbc-api-${Environment}'
+      Description: 'RT Dynamic Business Consulting API'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 'execute-api:Invoke'
+            Resource: '*'
+
+  # API Gateway Resources
+  ApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ParentId: !GetAtt RTDynamicAPI.RootResourceId
+      PathPart: api
+
+  ContactResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ParentId: !Ref ApiResource
+      PathPart: contact
+
+  QuestionnaireResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ParentId: !Ref ApiResource
+      PathPart: questionnaire
+
+  # Contact POST Method
+  ContactPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ResourceId: !Ref ContactResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestValidatorId: !Ref RequestValidator
+      RequestModels:
+        application/json: !Ref ContactRequestModel
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ContactHandlerFunction.Arn}/invocations'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+
+  # Contact OPTIONS Method (CORS)
+  ContactOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ResourceId: !Ref ContactResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+
+  # Questionnaire POST Method
+  QuestionnairePostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ResourceId: !Ref QuestionnaireResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestValidatorId: !Ref RequestValidator
+      RequestModels:
+        application/json: !Ref QuestionnaireRequestModel
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QuestionnaireHandlerFunction.Arn}/invocations'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+
+  # Questionnaire OPTIONS Method (CORS)
+  QuestionnaireOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ResourceId: !Ref QuestionnaireResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+
+  # Request Validator
+  RequestValidator:
+    Type: AWS::ApiGateway::RequestValidator
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      Name: !Sub 'rtdbc-request-validator-${Environment}'
+      ValidateRequestBody: true
+      ValidateRequestParameters: false
+
+  # Request Models
+  ContactRequestModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ContentType: application/json
+      Name: ContactRequest
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        type: object
+        required: [name, email, subject, message]
+        properties:
+          name:
+            type: string
+            minLength: 1
+            maxLength: 100
+          email:
+            type: string
+            format: email
+          subject:
+            type: string
+            minLength: 1
+            maxLength: 200
+          message:
+            type: string
+            minLength: 10
+            maxLength: 2000
+
+  QuestionnaireRequestModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      ContentType: application/json
+      Name: QuestionnaireRequest
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        type: object
+        required: [entityType, annualRevenue, companyName, industry, hasEmployees, managesStock, dealsForeignCurrency, primaryGoal, businessChallenges, contactName, email, phoneNumber]
+        properties:
+          entityType:
+            type: string
+            enum: ['Sole Proprietor', 'Partnership', 'Close Corporation (CC)', 'Private Company (Pty Ltd)', 'Public Company', 'Trust', 'Non-Profit Organization (NPO)', 'Other']
+          annualRevenue:
+            type: string
+            enum: ['R0 - R100,000', 'R100,001 - R500,000', 'R500,001 - R1,000,000', 'R1,000,001 - R5,000,000', 'R5,000,001 - R20,000,000', 'Over R20,000,000']
+          companyName:
+            type: string
+            minLength: 1
+            maxLength: 200
+          industry:
+            type: string
+          hasEmployees:
+            type: string
+            enum: ['Yes', 'No']
+          employeeCount:
+            type: string
+          managesStock:
+            type: string
+            enum: ['Yes', 'No']
+          dealsForeignCurrency:
+            type: string
+            enum: ['Yes', 'No']
+          primaryGoal:
+            type: string
+          businessChallenges:
+            type: string
+            minLength: 10
+            maxLength: 2000
+          contactName:
+            type: string
+            minLength: 1
+            maxLength: 100
+          email:
+            type: string
+            format: email
+          phoneNumber:
+            type: string
+            minLength: 1
+            maxLength: 20
+
+  # Lambda Permissions
+  ContactLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ContactHandlerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RTDynamicAPI}/*/*'
+
+  QuestionnaireLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref QuestionnaireHandlerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RTDynamicAPI}/*/*'
+
+  # API Gateway Deployment
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - ContactPostMethod
+      - ContactOptionsMethod
+      - QuestionnairePostMethod
+      - QuestionnaireOptionsMethod
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      Description: !Sub 'Deployment for ${Environment} environment'
+
+  # API Gateway Stage
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref RTDynamicAPI
+      DeploymentId: !Ref ApiDeployment
+      StageName: !Ref Environment
+      Description: !Sub '${Environment} stage for RT Dynamic API'
+      ThrottleSettings:
+        RateLimit: 100
+        BurstLimit: 200
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          LoggingLevel: INFO
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ThrottlingRateLimit: 100
+          ThrottlingBurstLimit: 200
+      Variables:
+        environment: !Ref Environment
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: RTDynamicBC
+
+  # CloudWatch Log Groups
+  ContactHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/rtdbc-contact-handler-${Environment}'
+      RetentionInDays: 14
+
+  QuestionnaireHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/rtdbc-questionnaire-handler-${Environment}'
+      RetentionInDays: 14
+
+  ApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/rtdbc-api-${Environment}'
+      RetentionInDays: 14
+
+  # CloudWatch Alarms
+  ContactHandlerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'rtdbc-contact-handler-errors-${Environment}'
+      AlarmDescription: 'Contact handler function errors'
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ContactHandlerFunction
+      TreatMissingData: notBreaching
+
+  QuestionnaireHandlerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'rtdbc-questionnaire-handler-errors-${Environment}'
+      AlarmDescription: 'Questionnaire handler function errors'
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref QuestionnaireHandlerFunction
+      TreatMissingData: notBreaching
+
+Outputs:
+  ApiGatewayUrl:
+    Description: 'API Gateway endpoint URL'
+    Value: !Sub 'https://${RTDynamicAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiUrl'
+
+  ContactEndpoint:
+    Description: 'Contact form endpoint'
+    Value: !Sub 'https://${RTDynamicAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/contact'
+    Export:
+      Name: !Sub '${AWS::StackName}-ContactEndpoint'
+
+  QuestionnaireEndpoint:
+    Description: 'Questionnaire endpoint'
+    Value: !Sub 'https://${RTDynamicAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/questionnaire'
+    Export:
+      Name: !Sub '${AWS::StackName}-QuestionnaireEndpoint'
+
+  ContactHandlerFunctionName:
+    Description: 'Contact handler Lambda function name'
+    Value: !Ref ContactHandlerFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-ContactHandlerFunction'
+
+  QuestionnaireHandlerFunctionName:
+    Description: 'Questionnaire handler Lambda function name'
+    Value: !Ref QuestionnaireHandlerFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-QuestionnaireHandlerFunction'
+
+  LambdaExecutionRoleArn:
+    Description: 'Lambda execution role ARN'
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-LambdaExecutionRole'

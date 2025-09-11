@@ -1,0 +1,29 @@
+{
+  "name": "rtdbc-questionnaire-handler",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for handling business health check questionnaire submissions",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "zip -r questionnaire-handler.zip . -x \"*.zip\" \"node_modules/.cache/*\" \"*.log\"",
+    "deploy": "aws lambda update-function-code --function-name rtdbc-questionnaire-handler --zip-file fileb://questionnaire-handler.zip"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.450.0"
+  },
+  "keywords": [
+    "aws-lambda",
+    "questionnaire",
+    "business-health-check",
+    "ses",
+    "email",
+    "serverless",
+    "quote-calculation"
+  ],
+  "author": "RT Dynamic Business Consulting",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
