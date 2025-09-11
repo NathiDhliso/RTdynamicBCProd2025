@@ -125,3 +125,5 @@ If you need HTTPS for your backend API:
 - Verify CORS settings allow your frontend domain# Deployment trigger - permissions updated 2025-09-11 08:02:16
 
 # Deployment trigger - staticfiles fix applied 2025-09-11 08:21:53
+
+# Deployment trigger - add EB Ready wait step 2025-09-11 08:27:45
