@@ -54,6 +54,41 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: Purge invalid staticfiles from configuration templates (pre-deploy)
+      run: |
+        set -e
+        echo "Listing configuration templates for application rtdbc-backend..."
+        TEMPLATES=$(aws elasticbeanstalk list-configuration-templates \
+          --application-name rtdbc-backend \
+          --query 'Templates[].TemplateName' \
+          --output text || true)
+        echo "Templates found: $TEMPLATES"
+
+        if [ -n "$TEMPLATES" ]; then
+          for T in $TEMPLATES; do
+            echo "Checking template: $T for invalid staticfiles options..."
+            NAMES=$(aws elasticbeanstalk describe-configuration-settings \
+              --application-name rtdbc-backend \
+              --template-name "$T" \
+              --query 'ConfigurationSettings[0].OptionSettings[?Namespace==`aws:elasticbeanstalk:container:nodejs:staticfiles`].OptionName' \
+              --output text || true)
+
+            if [ -n "$NAMES" ]; then
+              echo "Removing from template $T the following OptionNames: $NAMES"
+              for NAME in $NAMES; do
+                aws elasticbeanstalk update-configuration-template \
+                  --application-name rtdbc-backend \
+                  --template-name "$T" \
+                  --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=$NAME || true
+              done
+            else
+              echo "No invalid staticfiles options in template $T"
+            fi
+          done
+        else
+          echo "No configuration templates found. Skipping template purge."
+        fi
+
     - name: Purge invalid EB staticfiles options (pre-deploy)
       run: |
         set -e
