@@ -42,6 +42,22 @@ jobs:
           Procfile \
           -x "*.git*" "*.env*" "node_modules/*"
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Remove legacy staticfiles option (pre-deploy)
+      run: |
+        echo "Attempting to remove legacy staticfiles mapping from environment..."
+        aws elasticbeanstalk update-environment \
+          --application-name rtdbc-backend \
+          --environment-name rtdbc-production \
+          --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=/public || true
+        echo "If the option did not exist, this is a no-op. Proceeding to deploy."
+
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v22
       with:
@@ -55,12 +71,8 @@ jobs:
         existing_bucket_name: elasticbeanstalk-us-east-1-202717921808
         wait_for_environment_recovery: 300
 
-    - name: Set Environment Variables
+    - name: Update environment variables
       run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set region us-east-1
-        
         aws elasticbeanstalk update-environment \
           --application-name rtdbc-backend \
           --environment-name rtdbc-production \
