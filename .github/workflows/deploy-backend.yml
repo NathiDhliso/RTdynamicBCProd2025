@@ -56,7 +56,29 @@ jobs:
           --application-name rtdbc-backend \
           --environment-name rtdbc-production \
           --options-to-remove Namespace=aws:elasticbeanstalk:container:nodejs:staticfiles,OptionName=/public || true
-        echo "If the option did not exist, this is a no-op. Proceeding to deploy."
+        echo "If the option did not exist, this is a no-op."
+
+    - name: Wait for EB environment to be Ready
+      run: |
+        echo "Waiting for Elastic Beanstalk environment to be Ready..."
+        for i in {1..60}; do
+          STATUS=$(aws elasticbeanstalk describe-environments \
+            --application-name rtdbc-backend \
+            --environment-names rtdbc-production \
+            --query 'Environments[0].Status' \
+            --output text)
+          HEALTH=$(aws elasticbeanstalk describe-environments \
+            --application-name rtdbc-backend \
+            --environment-names rtdbc-production \
+            --query 'Environments[0].Health' \
+            --output text)
+          echo "Attempt $i: Status=$STATUS Health=$HEALTH"
+          if [ "$STATUS" = "Ready" ]; then
+            echo "Environment is Ready. Proceeding."
+            break
+          fi
+          sleep 10
+        done
 
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v22
