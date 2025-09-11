@@ -32,7 +32,7 @@ Parameters:
   
   FromEmail:
     Type: String
-    Default: contact@rtdynamicbc.co.za
+    Default: info@rtdynamicbc.co.za
     Description: From email address for SES
   
   SendConfirmation:

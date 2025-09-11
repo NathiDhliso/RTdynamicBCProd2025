@@ -7,8 +7,8 @@ import {
   createEmailAttachment,
   appendToExistingExcel,
   CONTACT_COLUMNS
-} from '../shared/excel-generator.js';
-import { sendEmailWithDataInBody } from '../shared/ses-email-helper.js';
+} from './excel-generator.js';
+import { sendEmailWithDataInBody } from './ses-email-helper.js';
 import { promises as fs } from 'fs';
 import path from 'path';
 
