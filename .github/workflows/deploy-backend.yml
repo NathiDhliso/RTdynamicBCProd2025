@@ -30,13 +30,15 @@ jobs:
     - name: Create deployment package
       run: |
         cd backend
-        # Create a clean deployment package with only essential files
+        # Create a clean deployment package with all necessary files including EB configs
         zip -r ../backend-deploy.zip \
           package.json \
           package-lock.json \
           server.js \
           routes/ \
           services/ \
+          .ebextensions/ \
+          .platform/ \
           Procfile \
           -x "*.git*" "*.env*" "node_modules/*"
 
@@ -50,6 +52,7 @@ jobs:
         region: us-east-1
         version_label: ${{ github.sha }}
         deployment_package: backend-deploy.zip
+        existing_bucket_name: elasticbeanstalk-us-east-1-202717921808
         wait_for_environment_recovery: 300
 
     - name: Set Environment Variables
