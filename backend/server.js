@@ -1,3 +1,4 @@
+// No-op redeploy marker: applying EB HTTPS config removal and refreshing environment – 2025-09-11
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
