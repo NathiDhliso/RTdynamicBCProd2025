@@ -50,7 +50,7 @@ export const createContactEmailTemplate = (formData) => {
             height: auto;
             display: block;
             margin: 0 auto;
-            filter: brightness(0) invert(1);
+
             transition: all 0.3s ease;
           }
           @media (max-width: 768px) {
@@ -225,7 +225,7 @@ export const createContactEmailTemplate = (formData) => {
         <div class="email-wrapper">
           <div class="header">
             <div class="logo-container">
-              <img src="https://rtdynamicbc.co.za/Logo.svg" alt="RT Dynamic Business Consulting Logo" class="company-logo" />
+              <img src="https://rtdynamicbc.co.za/Logo.png" alt="RT Dynamic Business Consulting Logo" class="company-logo" />
             </div>
             <h1>New Contact Form Submission</h1>
             <p><span class="company-name">RT Dynamic Business Consulting</span> Website</p>
@@ -349,7 +349,7 @@ export const createQuestionnaireEmailTemplate = (formData) => {
             height: auto;
             display: block;
             margin: 0 auto;
-            filter: brightness(0) invert(1);
+
             transition: all 0.3s ease;
           }
           .header::before {
@@ -632,7 +632,7 @@ export const createQuestionnaireEmailTemplate = (formData) => {
         <div class="email-wrapper">
           <div class="header">
             <div class="logo-container">
-              <img src="https://rtdynamicbc.co.za/Logo.svg" alt="RT Dynamic Business Consulting Logo" class="company-logo" />
+              <img src="https://rtdynamicbc.co.za/Logo.png" alt="RT Dynamic Business Consulting Logo" class="company-logo" />
             </div>
             <h1>📊 New Business Health Check Submission</h1>
             <p><span class="company-name">RT Dynamic Business Consulting</span> - Questionnaire Response</p>

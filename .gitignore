@@ -150,12 +150,21 @@ backend/*.log
 
 # AWS and sensitive files
 .aws/
+.aws-sam/
 aws-credentials.json
+samconfig.toml
 *.pem
 *.key
 *.crt
 *.p12
 *.pfx
+
+# AWS SAM specific
+aws-lambda-backend/.aws-sam/
+aws-lambda-backend/samconfig.toml
+aws-lambda-backend/.env
+aws-lambda-backend/.env.*
+aws-lambda-backend/env.json
 
 # Additional secrets and credentials
 .secrets
@@ -169,6 +178,20 @@ api-keys.json
 .env.staging
 .env.development
 .env.test
+
+# AWS Lambda specific secrets
+aws-lambda-backend/functions/*/.env
+aws-lambda-backend/functions/*/.env.*
+aws-lambda-backend/functions/*/secrets.json
+
+# GitHub Actions secrets (local testing)
+.github/secrets/
+github-secrets.json
+
+# CI/CD sensitive files
+.ci-secrets
+.deployment-keys
+deployment-config.json
 
 # GitHub and Git secrets
 .github-token

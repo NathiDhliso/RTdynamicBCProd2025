@@ -3,6 +3,28 @@
 
 import { SESClient, SendRawEmailCommand } from '@aws-sdk/client-ses';
 import { createMimeMessage } from 'mimetext';
+import https from 'https';
+
+/**
+ * Download a URL and return its base64-encoded content
+ */
+async function fetchUrlToBase64(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`Failed to fetch ${url}: ${res.statusCode}`));
+        res.resume?.();
+        return;
+      }
+      const chunks = [];
+      res.on('data', (d) => chunks.push(d));
+      res.on('end', () => {
+        const buf = Buffer.concat(chunks);
+        resolve(buf.toString('base64'));
+      });
+    }).on('error', reject);
+  });
+}
 
 /**
  * Send email with attachment using SES raw email format
@@ -62,7 +84,46 @@ export const sendEmailWithAttachments = async (sesClient, emailParams, attachmen
 };
 
 /**
+ * Build and send a raw email with inline assets (e.g., logo) referenced via CID
+ */
+async function sendRawEmailWithInlineAssets(sesClient, baseParams, inlineAssets = []) {
+  const msg = createMimeMessage();
+
+  msg.setHeader('from', baseParams.Source);
+  msg.setHeader('to', baseParams.Destination.ToAddresses.join(', '));
+  msg.setHeader('subject', baseParams.Message.Subject.Data);
+
+  const textBody = baseParams.Message.Body.Text?.Data || '';
+  const htmlBody = baseParams.Message.Body.Html.Data;
+
+  if (textBody) {
+    msg.addMessage({ contentType: 'text/plain; charset=UTF-8', data: textBody });
+  }
+  msg.addMessage({ contentType: 'text/html; charset=UTF-8', data: htmlBody });
+
+  inlineAssets.forEach(asset => {
+    msg.addAttachment({
+      filename: asset.filename,
+      contentType: asset.contentType,
+      data: asset.contentBase64,
+      contentId: asset.contentId,
+      inline: true,
+      contentDisposition: 'inline'
+    });
+  });
+
+  const rawEmailParams = {
+    RawMessage: { Data: Buffer.from(msg.asRaw()) },
+    Source: baseParams.Source,
+    Destinations: baseParams.Destination.ToAddresses,
+  };
+
+  return await sesClient.send(new SendRawEmailCommand(rawEmailParams));
+}
+
+/**
  * Fallback method: Send email without attachments but include Excel data in email body
+ * Optionally embeds the company logo inline using CID when the logo URL is detected in HTML.
  * @param {Object} sesClient - Configured SES client
  * @param {Object} emailParams - Email parameters
  * @param {Array} excelData - Excel data to include in email
@@ -70,38 +131,68 @@ export const sendEmailWithAttachments = async (sesClient, emailParams, attachmen
  */
 export const sendEmailWithDataInBody = async (sesClient, emailParams, excelData = []) => {
   const { SendEmailCommand } = await import('@aws-sdk/client-ses');
-  
-  if (excelData.length === 0) {
-    return await sesClient.send(new SendEmailCommand(emailParams));
-  }
-  
-  // Add data summary to email body
-  const dataSummary = generateDataSummary(excelData);
-  
-  // Modify email body to include data summary
-  const modifiedEmailParams = {
-    ...emailParams,
-    Message: {
-      ...emailParams.Message,
-      Body: {
-        Html: {
-          Data: emailParams.Message.Body.Html.Data.replace(
-            '</div>\n        </div>\n      </body>',
-            `${dataSummary}</div>\n        </div>\n      </body>`
-          ),
-          Charset: 'UTF-8'
-        },
-        Text: {
-          Data: emailParams.Message.Body.Text ? 
-            `${emailParams.Message.Body.Text.Data}\n\n--- SUBMISSION DATA ---\n${generateTextDataSummary(excelData)}` :
-            `--- SUBMISSION DATA ---\n${generateTextDataSummary(excelData)}`,
-          Charset: 'UTF-8'
+
+  // Determine base params (with or without data summary injected)
+  let baseParams = emailParams;
+  if (excelData.length > 0) {
+    const dataSummary = generateDataSummary(excelData);
+    baseParams = {
+      ...emailParams,
+      Message: {
+        ...emailParams.Message,
+        Body: {
+          Html: {
+            Data: emailParams.Message.Body.Html.Data.replace(
+              '</div>\n        </div>\n      </body>',
+              `${dataSummary}</div>\n        </div>\n      </body>`
+            ),
+            Charset: 'UTF-8'
+          },
+          Text: {
+            Data: emailParams.Message.Body.Text ? 
+              `${emailParams.Message.Body.Text.Data}\n\n--- SUBMISSION DATA ---\n${generateTextDataSummary(excelData)}` :
+              `--- SUBMISSION DATA ---\n${generateTextDataSummary(excelData)}`,
+            Charset: 'UTF-8'
+          }
         }
       }
+    };
+  }
+
+  // Detect logo URL and embed inline as CID
+  const html = baseParams.Message.Body.Html.Data || '';
+  const logoUrlMatch = html.match(/https?:\/\/[^"']*rtdynamicbc\.co\.za\/Logo\.(png|svg)/i);
+
+  if (logoUrlMatch) {
+    try {
+      const logoUrl = logoUrlMatch[0];
+      const ext = (logoUrl.split('.').pop() || 'png').toLowerCase();
+      const contentType = ext === 'svg' ? 'image/svg+xml' : 'image/png';
+      const base64 = await fetchUrlToBase64(logoUrl);
+
+      const htmlWithCid = html.replace(logoUrl, 'cid:logo');
+      const paramsWithCid = {
+        ...baseParams,
+        Message: {
+          ...baseParams.Message,
+          Body: {
+            Html: { Data: htmlWithCid, Charset: 'UTF-8' },
+            Text: baseParams.Message.Body.Text
+          }
+        }
+      };
+
+      return await sendRawEmailWithInlineAssets(sesClient, paramsWithCid, [
+        { filename: `Logo.${ext === 'svg' ? 'svg' : 'png'}`, contentType, contentBase64: base64, contentId: 'logo' }
+      ]);
+    } catch (e) {
+      console.warn('⚠️ Inline logo embedding failed, falling back to regular send:', e.message);
+      // Fall through to regular SendEmailCommand below
     }
-  };
-  
-  return await sesClient.send(new SendEmailCommand(modifiedEmailParams));
+  }
+
+  // Default path: regular SES send
+  return await sesClient.send(new SendEmailCommand(baseParams));
 };
 
 /**

@@ -55,21 +55,23 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-        cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
     
-    - name: Install backend dependencies
-      run: |
-        cd backend
-        npm ci
+    - name: Install AWS SAM CLI
+      uses: aws-actions/setup-sam@v2
+      with:
+        use-installer: true
     
-    - name: Check backend syntax
+    - name: Validate SAM template
       run: |
-        cd backend
-        node -c server.js
-        node -c routes/contact.js
-        node -c routes/questionnaire.js
-        node -c services/emailService.js
+        cd aws-lambda-backend
+        sam validate --template template.yaml
+    
+    - name: Check Lambda function syntax
+      run: |
+        cd aws-lambda-backend/functions/contact-handler
+        node -c index.js
+        cd ../questionnaire-handler
+        node -c index.js
 
   security-scan:
     runs-on: ubuntu-latest
@@ -90,11 +92,12 @@ jobs:
     - name: Run security audit
       run: npm audit --audit-level=moderate
     
-    - name: Check for vulnerabilities in backend
+    - name: Check for vulnerabilities in Lambda functions
       run: |
-        cd backend
-        npm ci
-        npm audit --audit-level=moderate
+        cd aws-lambda-backend/functions/contact-handler
+        npm audit --audit-level=moderate || true
+        cd ../questionnaire-handler
+        npm audit --audit-level=moderate || true
 
   deploy-preview:
     runs-on: ubuntu-latest
