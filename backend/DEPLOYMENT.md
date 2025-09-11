@@ -127,3 +127,4 @@ If you need HTTPS for your backend API:
 # Deployment trigger - staticfiles fix applied 2025-09-11 08:21:53
 
 # Deployment trigger - add EB Ready wait step 2025-09-11 08:27:45
+\nDeployment trigger - purge staticfiles predeploy fix 2025-09-11 08:37:53 +02:00
