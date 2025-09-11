@@ -30,6 +30,12 @@ jobs:
     - name: Create deployment package
       run: |
         cd backend
+        # Remove any legacy EB config that may re-introduce invalid staticfiles mapping
+        if [ -f .ebextensions/nodecommand.config ]; then
+          echo "Removing legacy .ebextensions/nodecommand.config from workspace before packaging"
+          rm -f .ebextensions/nodecommand.config
+        fi
+        
         # Create a clean deployment package with all necessary files including EB configs
         zip -r ../backend-deploy.zip \
           package.json \
@@ -40,7 +46,7 @@ jobs:
           .ebextensions/ \
           .platform/ \
           Procfile \
-          -x "*.git*" "*.env*" "node_modules/*"
+          -x "*.git*" "*.env*" "node_modules/*" ".ebextensions/nodecommand.config"
 
     - name: List deployment package contents (debug)
       run: |
