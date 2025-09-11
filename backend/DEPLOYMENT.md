@@ -128,3 +128,4 @@ If you need HTTPS for your backend API:
 
 # Deployment trigger - add EB Ready wait step 2025-09-11 08:27:45
 \nDeployment trigger - purge staticfiles predeploy fix 2025-09-11 08:37:53 +02:00
+\nDeployment trigger - purge EB templates staticfiles fix 2025-09-11 08:46:16 +02:00
