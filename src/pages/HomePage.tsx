@@ -128,6 +128,12 @@ const HomePage: React.FC = () => {
 
   // Enhanced GSAP animations with cinematic scrolling
   useGSAP(() => {
+    // Configure ScrollTrigger for mobile compatibility
+    ScrollTrigger.config({
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+      ignoreMobileResize: true
+    });
+    
     // Refresh ScrollTrigger on resize
     ScrollTrigger.refresh();
 
@@ -572,19 +578,25 @@ const HomePage: React.FC = () => {
       delay: 0.8
     });
 
-    // Animated number counters with bounce
+    // Animated number counters with mobile-friendly configuration
     gsap.utils.toArray<HTMLElement>(".gsap-stat-number").forEach(el => {
       const target = { val: 0 };
       const endValue = parseFloat(el.dataset.value || '0');
       
+      // Mobile-optimized ScrollTrigger configuration
       ScrollTrigger.create({
         trigger: el,
-        start: 'top 85%',
+        start: isMobile ? 'top 90%' : 'top 85%',
+        end: isMobile ? 'bottom 60%' : 'bottom 70%',
+        // Add mobile-specific settings
+        refreshPriority: -1,
+        invalidateOnRefresh: true,
+        // Use both onEnter and onToggle for better mobile compatibility
         onEnter: () => {
           gsap.to(target, {
             val: endValue,
-            duration: 2.5,
-            ease: 'expo.out',
+            duration: isMobile ? 2.0 : 2.5,
+            ease: isMobile ? 'power2.out' : 'expo.out',
             onUpdate: () => {
               if (el.dataset.label === "Success Rate") {
                 el.innerText = target.val.toFixed(0) + '%';
@@ -595,15 +607,37 @@ const HomePage: React.FC = () => {
               }
             },
             onComplete: () => {
-              gsap.to(el, {
-                scale: 1.2,
-                duration: 0.2,
-                yoyo: true,
-                repeat: 1,
-                ease: "power2.inOut"
-              });
+              // Simplified bounce effect for mobile
+              if (!isMobile) {
+                gsap.to(el, {
+                  scale: 1.2,
+                  duration: 0.2,
+                  yoyo: true,
+                  repeat: 1,
+                  ease: "power2.inOut"
+                });
+              }
             }
           });
+        },
+        // Add fallback for mobile devices that might not trigger onEnter
+        onToggle: (self) => {
+          if (self.isActive && target.val === 0) {
+            gsap.to(target, {
+              val: endValue,
+              duration: isMobile ? 2.0 : 2.5,
+              ease: isMobile ? 'power2.out' : 'expo.out',
+              onUpdate: () => {
+                if (el.dataset.label === "Success Rate") {
+                  el.innerText = target.val.toFixed(0) + '%';
+                } else if (el.dataset.label === "Value Created") {
+                  el.innerText = 'R' + target.val.toFixed(0) + 'M+';
+                } else {
+                  el.innerText = target.val.toFixed(0) + '+';
+                }
+              }
+            });
+          }
         },
         once: true
       });
@@ -626,6 +660,57 @@ const HomePage: React.FC = () => {
 
 
   }, { scope: mainRef, dependencies: [prefersReducedMotion, isMobile] });
+
+  // Fallback for mobile devices using Intersection Observer
+  useEffect(() => {
+    if (!isMobile || prefersReducedMotion) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            const target = { val: 0 };
+            const endValue = parseFloat(el.dataset.value || '0');
+            
+            // Check if animation hasn't started yet
+            if (el.innerText === '0' || el.innerText === '0+' || el.innerText === '0%') {
+              gsap.to(target, {
+                val: endValue,
+                duration: 2.0,
+                ease: 'power2.out',
+                onUpdate: () => {
+                  if (el.dataset.label === "Success Rate") {
+                    el.innerText = target.val.toFixed(0) + '%';
+                  } else if (el.dataset.label === "Value Created") {
+                    el.innerText = 'R' + target.val.toFixed(0) + 'M+';
+                  } else {
+                    el.innerText = target.val.toFixed(0) + '+';
+                  }
+                }
+              });
+              observer.unobserve(el);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+        rootMargin: '0px 0px -10% 0px'
+      }
+    );
+
+    // Observe all stat numbers with a delay to ensure ScrollTrigger has a chance first
+    const timeout = setTimeout(() => {
+      const statNumbers = document.querySelectorAll('.gsap-stat-number');
+      statNumbers.forEach((el) => observer.observe(el));
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, [isMobile, prefersReducedMotion]);
 
   // This seems to be duplicate - the data arrays are already defined above
 
