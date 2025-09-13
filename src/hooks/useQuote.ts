@@ -1,100 +1,201 @@
 import { useMemo } from 'react';
 import { BusinessHealthCheckData } from '@/lib/schemas';
 
-// Recalibrated Base Prices based on market analysis from the report
-const SERVICE_PRICES = {
-    bookkeeping: 3000,
-    taxFiling: 2500,
-    financialStatements: 4000,
-    payrollPEPM: 150, // Per Employee Per Month
-    managementAccounts: 5000,
-    budgeting: 1000, // Per hour estimate
-    cipc: 350,
-    virtualCFO: 7500,
-    audit: 15000,
+// Base pricing structure matching backend calculations
+const BASE_SERVICES = {
+  'Sole Proprietor': 800,
+  'Partnership': 1200,
+  'Close Corporation (CC)': 1500,
+  'Private Company (Pty Ltd)': 2500,
+  'Public Company': 5000,
+  'Trust': 1800,
+  'Non-Profit Organization (NPO)': 1000,
+  'Other': 1500
+};
+
+// Employee count pricing (monthly payroll processing)
+const PAYROLL_PRICING = {
+  '1-5': 300,
+  '6-20': 800,
+  '21-50': 1500,
+  '51-100': 2500,
+  'Over 100': 4000
+};
+
+// Industry-specific modifiers
+const INDUSTRY_MODIFIERS = {
+  'Accounting & Finance': 1.0,
+  'Agriculture & Farming': 1.1,
+  'Automotive': 1.15,
+  'Construction & Real Estate': 1.2,
+  'Consulting & Professional Services': 1.0,
+  'Education & Training': 0.95,
+  'Energy & Utilities': 1.25,
+  'Entertainment & Media': 1.1,
+  'Food & Beverage': 1.15,
+  'Healthcare & Medical': 1.2,
+  'Hospitality & Tourism': 1.1,
+  'Information Technology': 1.05,
+  'Legal Services': 1.0,
+  'Manufacturing': 1.25,
+  'Marketing & Advertising': 1.05,
+  'Non-Profit': 0.9,
+  'Retail & E-commerce': 1.15,
+  'Transportation & Logistics': 1.2,
+  'Other': 1.0
 };
 
 // --- Multiplier Logic from Granular Model ---
 
 const getRevenueModifier = (revenue: string | undefined): number => {
   switch (revenue) {
-    case 'Under R100,000': return 1.0;
-    case 'R100,000 - R500,000': return 1.2;
-    case 'R500,000 - R2 million': return 1.5;
-    case 'R2 million - R10 million': return 2.0;
-    case 'R10 million - R50 million': return 3.0;
-    case 'Over R50 million': return 4.0;
+    case 'R0 - R100,000': return 0.8;
+    case 'R100,001 - R500,000': return 1.0;
+    case 'R500,001 - R1,000,000': return 1.2;
+    case 'R1,000,001 - R5,000,000': return 1.5;
+    case 'R5,000,001 - R20,000,000': return 2.0;
+    case 'Over R20,000,000': return 2.5;
     default: return 1.0;
   }
 };
 
-const getEmployeeCount = (employeeInfo: string | undefined): number => {
-    if (!employeeInfo) return 0;
-    if (employeeInfo.includes('1-5')) return 5;
-    if (employeeInfo.includes('6-20')) return 20;
-    if (employeeInfo.includes('21-50')) return 50;
-    if (employeeInfo.includes('51-100')) return 100;
-    if (employeeInfo.includes('Over 100')) return 150;
-    return 0;
+const getPayrollCost = (hasEmployees: string | undefined, employeeCount: string | undefined): number => {
+    if (hasEmployees !== 'Yes' || !employeeCount) return 0;
+    return PAYROLL_PRICING[employeeCount as keyof typeof PAYROLL_PRICING] || 0;
 };
 
-// Objective "Complexity Matrix" implemented in code
-const getComplexityModifier = (formData: Partial<BusinessHealthCheckData>): { modifier: number, factors: string[] } => {
-    let modifier = 1.0;
-    const factors: string[] = [];
+// Complexity modifiers matching backend logic
+const COMPLEXITY_MODIFIERS = {
+  'Payroll Management': 1.15,
+  'Inventory Management': 1.20,
+  'Foreign Currency Transactions': 1.25,
+  'Corporate Compliance': 1.10,
+  'Audit Requirements': 1.30,
+  'Complex Tax Structure': 1.20,
+  'Extensive Regulatory Reporting': 1.15
+};
 
-    // Transactional Complexity
-    if (formData.dealsForeignCurrency === 'Yes, regularly') {
-        modifier += 0.3;
-        factors.push('Regular foreign currency transactions (+0.3)');
+const getComplexityFactors = (formData: Partial<BusinessHealthCheckData>): string[] => {
+  const factors: string[] = [];
+  
+  if (formData.hasEmployees === 'Yes') {
+    factors.push('Payroll Management');
+  }
+  
+  if (formData.managesStock === 'Yes') {
+    factors.push('Inventory Management');
+  }
+  
+  if (formData.dealsForeignCurrency === 'Yes') {
+    factors.push('Foreign Currency Transactions');
+  }
+  
+  if (formData.entityType === 'Private Company (Pty Ltd)') {
+    factors.push('Corporate Compliance');
+    
+    if (formData.auditRequirements === 'Required') {
+      factors.push('Audit Requirements');
     }
-    // Operational Factors
-    if (formData.managesStock === 'Yes, significant stock') {
-        modifier += 0.2;
-        factors.push('Significant stock/inventory management (+0.2)');
+    
+    if (formData.taxComplexity === 'Complex') {
+      factors.push('Complex Tax Structure');
     }
-    // Statutory & Compliance Complexity
-    if (formData.taxComplexity === 'Complex - Multiple tax obligations') {
-        modifier += 0.4;
-        factors.push('Complex tax structure (+0.4)');
+    
+    if (formData.regulatoryReporting === 'Extensive') {
+      factors.push('Extensive Regulatory Reporting');
     }
-    if (formData.auditRequirements === 'Annual audit required') {
-        modifier += 0.5;
-        factors.push('Statutory audit requirement (+0.5)');
-    }
+  }
+  
+  return factors;
+};
+
+const getComplexityModifier = (formData: Partial<BusinessHealthCheckData>): { modifier: number, factors: string[] } => {
+    const factors = getComplexityFactors(formData);
+    let modifier = 1.0;
+    
+    factors.forEach(factor => {
+      const factorModifier = COMPLEXITY_MODIFIERS[factor as keyof typeof COMPLEXITY_MODIFIERS];
+      if (factorModifier) {
+        modifier *= factorModifier;
+      }
+    });
 
     return { modifier, factors };
 };
 
 export const calculateQuote = (formData: Partial<BusinessHealthCheckData>) => {
-    // This example assumes a client gets a base package of services.
-    // In a real implementation, you would check which services the user selected.
-    const baseServices = {
-        'Bookkeeping': SERVICE_PRICES.bookkeeping,
-        'Tax Filing': SERVICE_PRICES.taxFiling,
-        'CIPC Annual Returns': SERVICE_PRICES.cipc,
-    };
-    const basePrice = Object.values(baseServices).reduce((sum, price) => sum + price, 0);
-
-    // Isolate Payroll Calculation
-    const employeeCount = getEmployeeCount(formData.employeeCount);
-    const payrollCost = formData.hasEmployees === 'Yes, I have employees' ? employeeCount * SERVICE_PRICES.payrollPEPM : 0;
-
-    const revenueModifier = getRevenueModifier(formData.annualRevenue);
-    const { modifier: complexityModifier, factors: complexityFactors } = getComplexityModifier(formData);
-
-    const coreServicesPrice = basePrice * revenueModifier * complexityModifier;
-    const finalPrice = coreServicesPrice + payrollCost;
-
-    return {
-        quote: Math.round(finalPrice / 100) * 100,
-        basePrice,
-        payrollCost,
-        revenueModifier,
-        complexityModifier,
-        complexityFactors,
-        baseServices,
-    };
+    try {
+        // Get base pricing for entity type
+        const basePrice = BASE_SERVICES[formData.entityType as keyof typeof BASE_SERVICES] || 1500;
+        
+        // Apply revenue modifier
+        const revenueModifier = getRevenueModifier(formData.annualRevenue);
+        let adjustedPrice = basePrice * revenueModifier;
+        
+        // Calculate payroll costs
+        const payrollCost = getPayrollCost(formData.hasEmployees, formData.employeeCount);
+        
+        // Get complexity factors and modifier
+        const { modifier: complexityModifier, factors: complexityFactors } = getComplexityModifier(formData);
+        
+        // Apply industry modifier
+        const industryModifier = INDUSTRY_MODIFIERS[formData.industry as keyof typeof INDUSTRY_MODIFIERS] || 1.0;
+        
+        // Calculate final quote
+        const baseWithComplexity = adjustedPrice * complexityModifier * industryModifier;
+        const totalQuote = Math.round(baseWithComplexity + payrollCost);
+        
+        // Ensure minimum quote
+        const minimumQuote = 500;
+        const finalQuote = Math.max(totalQuote, minimumQuote);
+        
+        return {
+            quote: finalQuote,
+            basePrice: basePrice,
+            payrollCost: payrollCost,
+            revenueModifier: revenueModifier,
+            complexityModifier: complexityModifier,
+            industryModifier: industryModifier,
+            complexityFactors: complexityFactors,
+            baseServices: {
+                entityType: formData.entityType,
+                description: `Comprehensive accounting services for ${formData.entityType}`
+            },
+            breakdown: {
+                basePrice: basePrice,
+                revenueAdjustment: Math.round(adjustedPrice - basePrice),
+                complexityAdjustment: Math.round(baseWithComplexity - adjustedPrice),
+                payrollCost: payrollCost,
+                industryAdjustment: Math.round((baseWithComplexity * industryModifier) - baseWithComplexity),
+                total: finalQuote
+            }
+        };
+        
+    } catch (error) {
+        console.error('Quote calculation error:', error);
+        // Return fallback quote
+        return {
+            quote: 1500,
+            basePrice: 1500,
+            payrollCost: 0,
+            revenueModifier: 1.0,
+            complexityModifier: 1.0,
+            industryModifier: 1.0,
+            complexityFactors: [],
+            baseServices: {
+                entityType: formData.entityType || 'Other',
+                description: 'Basic accounting services'
+            },
+            breakdown: {
+                basePrice: 1500,
+                revenueAdjustment: 0,
+                complexityAdjustment: 0,
+                payrollCost: 0,
+                industryAdjustment: 0,
+                total: 1500
+            }
+        };
+    }
 }
 
 
