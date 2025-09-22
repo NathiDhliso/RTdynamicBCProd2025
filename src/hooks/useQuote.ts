@@ -130,7 +130,7 @@ export const calculateQuote = (formData: Partial<BusinessHealthCheckData>) => {
         
         // Apply revenue modifier
         const revenueModifier = getRevenueModifier(formData.annualRevenue);
-        let adjustedPrice = basePrice * revenueModifier;
+        const adjustedPrice = basePrice * revenueModifier;
         
         // Calculate payroll costs
         const payrollCost = getPayrollCost(formData.hasEmployees, formData.employeeCount);

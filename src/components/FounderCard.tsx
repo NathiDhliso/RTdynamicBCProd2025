@@ -58,7 +58,7 @@ const FounderCard = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const _prefersReducedMotion = usePrefersReducedMotion();
   const { isMobile, isTouch } = useDeviceDetection();
 
   const handleCardClick = (e) => {
@@ -345,10 +345,10 @@ const styles = `
   
   /* Disable problematic hover effects on touch devices */
   @media (hover: none) and (pointer: coarse) {
-    .hover\:scale-105:hover {
+    .hover\\:scale-105:hover {
       transform: scale(1);
     }
-    .hover\:scale-110:hover {
+    .hover\\:scale-110:hover {
       transform: scale(1);
     }
   }
