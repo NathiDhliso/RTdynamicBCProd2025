@@ -1,0 +1,18 @@
+{
+  "entityType": "Sole Proprietor",
+  "annualRevenue": "Over R20,000,000",
+  "companyName": "THFC",
+  "industry": "Information Technology",
+  "hasEmployees": "Yes",
+  "employeeCount": "6-20",
+  "managesStock": "No",
+  "dealsForeignCurrency": "No",
+  "taxComplexity": "Simple",
+  "auditRequirements": "Not Required",
+  "regulatoryReporting": "Standard",
+  "primaryGoal": "Improve Financial Management",
+  "businessChallenges": "Testing the updated questionnaire validation",
+  "contactName": "Test User",
+  "email": "test@example.com",
+  "phoneNumber": "+27123456789"
+}

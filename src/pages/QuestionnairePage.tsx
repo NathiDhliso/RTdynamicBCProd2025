@@ -22,8 +22,8 @@ const QuestionnairePage: React.FC = () => {
       currentStep = step - 1;
     }
     
-    // We subtract 1 from currentStep because we want progress to be 100% at the START of the final step's submission
-    return ((currentStep - 1) / actualTotalSteps) * 100;
+    // Calculate progress to reach 100% on the final step
+    return (currentStep / actualTotalSteps) * 100;
   }, [step, shouldShowComplianceStep]);
 
   const stepDisplay = useMemo(() => {

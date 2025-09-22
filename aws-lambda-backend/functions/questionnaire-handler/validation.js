@@ -385,13 +385,7 @@ export const validateQuestionnaireForm = (data) => {
     });
   }
   
-  // Validate revenue range makes sense for entity type
-  if (cleanData.entityType === 'Sole Proprietor' && cleanData.annualRevenue === 'Over R20,000,000') {
-    errors.push({
-      field: 'annualRevenue',
-      message: 'Revenue range seems unusually high for a sole proprietor'
-    });
-  }
+  // Note: Removed restrictive revenue validation for sole proprietors to allow more flexibility
   
   return {
     isValid: errors.length === 0,
