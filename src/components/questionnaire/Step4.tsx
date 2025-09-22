@@ -80,9 +80,9 @@ const Step4: React.FC = () => {
       console.log('📊 Submitting Business Health Check with Quote:', payload);
       
       const rawApi = (() => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
   if (!import.meta.env.DEV && (!url || String(url).trim() === '')) {
-    throw new Error('API base URL is not configured. Please set VITE_API_URL in your hosting environment.');
+    throw new Error('API base URL is not configured. Please set VITE_API_BASE_URL in your hosting environment.');
   }
   return url || 'http://localhost:3001';
 })();

@@ -32,13 +32,12 @@ interface DebugInfo {
 
 const DebugPanel: React.FC = () => {
   // Sanitize API URL to prevent mixed content errors
-  const rawApiUrl =
-  import.meta.env.DEV
-    ? (import.meta.env.VITE_API_URL || 'http://localhost:3001')
-    : (import.meta.env.VITE_API_URL || '');
-  const sanitizedApiUrl = (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawApiUrl.startsWith('http://'))
-    ? rawApiUrl.replace('http://', 'https://')
-    : rawApiUrl;
+  const apiUrl = import.meta.env.DEV
+        ? (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001')
+        : (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '');
+  const sanitizedApiUrl = (typeof window !== 'undefined' && window.location.protocol === 'https:' && apiUrl.startsWith('http://'))
+    ? apiUrl.replace('http://', 'https://')
+    : apiUrl;
 
   const [debugInfo, setDebugInfo] = useState<DebugInfo>({
     apiUrl: sanitizedApiUrl,
